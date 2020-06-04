@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>KoyashiroKohaku.PngMetaDataTool</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>Koyashiro Kohaku</Authors>
+  </PropertyGroup>
+
+</Project>
