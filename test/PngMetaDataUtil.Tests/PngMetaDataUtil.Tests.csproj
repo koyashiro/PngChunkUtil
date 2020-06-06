@@ -7,7 +7,7 @@
 
     <RootNamespace>KoyashiroKohaku.PngMetaDataUtil.Test</RootNamespace>
 
-    <Version>0.1.0</Version>
+    <Version>0.1.2</Version>
 
     <Authors>Koyashiro Kohaku</Authors>
   </PropertyGroup>
