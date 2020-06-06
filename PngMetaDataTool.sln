@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PngMetaDataTool", "PngMetaDataTool\PngMetaDataTool.csproj", "{5387F6FF-2E07-450F-A3BF-04B69026561F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PngMetaDataTool", "src\PngMetaDataTool\PngMetaDataTool.csproj", "{5387F6FF-2E07-450F-A3BF-04B69026561F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
