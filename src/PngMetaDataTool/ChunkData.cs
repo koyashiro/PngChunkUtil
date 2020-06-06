@@ -37,12 +37,9 @@ namespace KoyashiroKohaku.PngMetaDataTool
         /// </summary>
         public int Length => _chunkData.Length;
 
-        /// <summary>
-        /// <see cref="PngMetaDataParser"/>を文字列に変換して返却します。
-        /// </summary>
-        /// <param name="encoding">文字エンコーディンgy</param>
-        /// <returns></returns>
-        public string GetString(Encoding encoding = null)
+        public override string ToString() => ToString(Encoding.UTF8);
+
+        public string ToString(Encoding encoding)
         {
             if (encoding is null)
             {
@@ -50,11 +47,6 @@ namespace KoyashiroKohaku.PngMetaDataTool
             }
 
             return encoding.GetString(_chunkData);
-        }
-
-        public override string ToString()
-        {
-            return GetString();
         }
     }
 }
