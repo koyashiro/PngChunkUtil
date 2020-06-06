@@ -10,15 +10,39 @@ namespace KoyashiroKohaku.PngMetaDataUtil
     /// </summary>
     public class Chunk
     {
+        public Chunk()
+        {
+            ChunkType = new ChunkType();
+            ChunkData = new ChunkData();
+        }
+
+        public Chunk(ChunkType chunkType, ChunkData chunkData)
+        {
+            ChunkType = chunkType;
+            ChunkData = chunkData;
+        }
+
+        public Chunk(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)
+        {
+            ChunkType = new ChunkType(type);
+            ChunkData = new ChunkData(data);
+        }
+
+        public Chunk(ReadOnlySpan<char> type, ReadOnlySpan<char> data)
+        {
+            ChunkType = new ChunkType(type);
+            ChunkData = new ChunkData(data);
+        }
+
         /// <summary>
         /// ChunkTypeを返却します。
         /// </summary>
-        public ChunkType ChunkType { get; set; }
+        public ChunkType ChunkType { get; }
 
         /// <summary>
         /// ChunkDataを返却します。
         /// </summary>
-        public ChunkData ChunkData { get; set; }
+        public ChunkData ChunkData { get; }
 
         /// <summary>
         /// ChunkDataのバイト長を返却します。

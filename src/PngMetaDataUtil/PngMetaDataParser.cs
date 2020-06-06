@@ -62,8 +62,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 throw new ArgumentNullException($"argument error. argument: '{nameof(source)}' is null.");
             }
 
-            var span = source.AsSpan();
+            ReadOnlySpan<byte> span = source.AsSpan();
 
+            // シグネチャをチェック
             if (!span.Slice(0, 8).SequenceEqual(PngSignature))
             {
                 throw new ArgumentException($"argument error. argument: '{nameof(source)}' is broken or no png image binary.");
@@ -88,11 +89,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 // [4 byte] : crc (not used)
                 // var crc = span.Slice(index + 8 + length, 4);
 
-                chunks.Add(new Chunk
-                {
-                    ChunkType = new ChunkType(type),
-                    ChunkData = new ChunkData(data)
-                });
+                chunks.Add(new Chunk(type, data));
 
                 // to next chunk
                 index += 4 + 4 + length + 4;
@@ -146,11 +143,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 // [(length) byte] : ChunkData
                 var data = span.Slice(index + 8, length);
 
-                chunks.Add(new Chunk
-                {
-                    ChunkType = chunkType,
-                    ChunkData = new ChunkData(data)
-                });
+                chunks.Add(new Chunk(chunkType, new ChunkData(data)));
 
                 // [4 byte] : crc (not used)
                 // var crc = span.Slice(index + 8 + length, 4);
@@ -161,5 +154,66 @@ namespace KoyashiroKohaku.PngMetaDataUtil
 
             return chunks;
         }
+
+        /// <summary>
+        /// PNG画像から条件に合致するチャンクをすべて抽出します。
+        /// </summary>
+        /// <param name="source">PNG画像のbyte配列</param>
+        /// <param name="expression">抽出条件</param>
+        /// <returns></returns>
+        //public static IEnumerable<ReadOnlySpan<byte>> GetChunks(byte[] source)
+        //{
+        //    if (source is null)
+        //    {
+        //        throw new ArgumentNullException($"argument error. argument: '{nameof(source)}' is null.");
+        //    }
+
+        //    var span = source.AsSpan();
+
+        //    if (!span.Slice(0, 8).SequenceEqual(PngSignature))
+        //    {
+        //        throw new ArgumentException($"argument error. argument: '{nameof(source)}' is broken or no png image binary.");
+        //    }
+
+        //    // 先頭のシグネチャを除く
+        //    var index = 8;
+
+        //    var chunks = new List<Chunk>();
+
+        //    while (index < span.Length)
+        //    {
+        //        // [4 byte] : Length of ChunkData
+        //        var length = BinaryPrimitives.ReadInt32BigEndian(span.Slice(index, 4));
+
+        //        // [4 byte] : ChunkType
+        //        var chunkType = new ChunkType(span.Slice(index + 4, 4));
+
+        //        // expressionで条件に合致するかチェック
+        //        if (!expression.Compile()(chunkType))
+        //        {
+        //            // to next chunk
+        //            index += 4 + 4 + length + 4;
+
+        //            continue;
+        //        }
+
+        //        // [(length) byte] : ChunkData
+        //        var data = span.Slice(index + 8, length);
+
+        //        chunks.Add(new Chunk
+        //        {
+        //            ChunkType = chunkType,
+        //            ChunkData = new ChunkData(data)
+        //        });
+
+        //        // [4 byte] : crc (not used)
+        //        // var crc = span.Slice(index + 8 + length, 4);
+
+        //        // to next chunk
+        //        index += 4 + 4 + length + 4;
+        //    }
+
+        //    return chunks;
+        //}
     }
 }
