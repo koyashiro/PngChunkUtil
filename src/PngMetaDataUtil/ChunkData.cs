@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace KoyashiroKohaku.PngMetaDataTool
+namespace KoyashiroKohaku.PngMetaDataUtil
 {
     /// <summary>
     /// ChunkData

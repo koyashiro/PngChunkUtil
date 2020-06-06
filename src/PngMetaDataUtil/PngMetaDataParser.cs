@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace KoyashiroKohaku.PngMetaDataTool
+namespace KoyashiroKohaku.PngMetaDataUtil
 {
     /// <summary>
     /// MetaDataParser

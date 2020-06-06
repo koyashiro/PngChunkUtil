@@ -1,10 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using KoyashiroKohaku.PngMetaDataTool;
+using KoyashiroKohaku.PngMetaDataUtil;
 using System;
 using System.Linq;
 using System.IO;
 
-namespace KoyashiroKohaku.PngMetaDataTool.Tests
+namespace KoyashiroKohaku.PngMetaDataUtil.Tests
 {
     [TestClass]
     public class PngMetaDataParserTest
