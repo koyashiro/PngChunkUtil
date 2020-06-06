@@ -51,6 +51,18 @@ namespace KoyashiroKohaku.PngMetaDataTool.Tests
         }
 
         [TestMethod]
+        public void IsPngSpan_FalseTest()
+        {
+            Assert.IsFalse(PngMetaDataParser.IsPng(InvalidSource.AsSpan()));
+        }
+
+        [TestMethod]
+        public void IsPngSpan_TrueTest()
+        {
+            Assert.IsTrue(PngMetaDataParser.IsPng(ValidSource.AsSpan()));
+        }
+
+        [TestMethod]
         public void GetAllChunks_ArgumentNullExceptionTest()
         {
             try
