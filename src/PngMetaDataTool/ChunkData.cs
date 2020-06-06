@@ -4,33 +4,38 @@ using System.Text;
 namespace KoyashiroKohaku.PngMetaDataTool
 {
     /// <summary>
-    /// ChunkType
+    /// ChunkData
     /// </summary>
-    public class ChunkType
+    public class ChunkData
     {
         /// <summary>
-        /// ChunkType
+        /// ChunkData
         /// </summary>
-        private readonly byte[] _chunkType;
+        private readonly byte[] _chunkData;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="data"></param>
-        public ChunkType(Span<byte> type)
+        public ChunkData(Span<byte> data)
         {
-            if (type == null)
+            if (data == null)
             {
-                throw new ArgumentNullException($"argument error. argument: '{nameof(type)}' is null.");
+                throw new ArgumentNullException($"argument error. argument: '{nameof(data)}' is null.");
             }
 
-            _chunkType = type.ToArray();
+            _chunkData = data.ToArray();
         }
 
         /// <summary>
         /// <see cref="PngMetaDataParser"/>のSpan構造体を返却します。
         /// </summary>
-        public Span<byte> Value => _chunkType.AsSpan();
+        public Span<byte> Value => _chunkData.AsSpan();
+
+        /// <summary>
+        /// ChunkDataのバイト長
+        /// </summary>
+        public int Length => _chunkData.Length;
 
         /// <summary>
         /// <see cref="PngMetaDataParser"/>を文字列に変換して返却します。
@@ -44,7 +49,7 @@ namespace KoyashiroKohaku.PngMetaDataTool
                 encoding = Encoding.UTF8;
             }
 
-            return encoding.GetString(_chunkType);
+            return encoding.GetString(_chunkData);
         }
 
         public override string ToString()
