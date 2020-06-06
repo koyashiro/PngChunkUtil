@@ -13,7 +13,7 @@ namespace KoyashiroKohaku.PngMetaDataTool
         /// <summary>
         /// PNG画像のシグネチャ
         /// </summary>
-        public static readonly byte[] PngSignature = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+        public static Span<byte> PngSignature => new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
 
         /// <summary>
         /// PNG画像かどうかをチェックします。
@@ -47,7 +47,7 @@ namespace KoyashiroKohaku.PngMetaDataTool
                 return false;
             }
 
-            return source.Slice(0, 8).SequenceEqual(PngSignature.AsSpan());
+            return source.Slice(0, 8).SequenceEqual(PngSignature);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace KoyashiroKohaku.PngMetaDataTool
 
             var span = source.AsSpan();
 
-            if (!span.Slice(0, 8).SequenceEqual(PngSignature.AsSpan()))
+            if (!span.Slice(0, 8).SequenceEqual(PngSignature))
             {
                 throw new ArgumentException($"argument error. argument: '{nameof(source)}' is broken or no png image binary.");
             }
@@ -116,7 +116,7 @@ namespace KoyashiroKohaku.PngMetaDataTool
 
             var span = source.AsSpan();
 
-            if (!span.Slice(0, 8).SequenceEqual(PngSignature.AsSpan()))
+            if (!span.Slice(0, 8).SequenceEqual(PngSignature))
             {
                 throw new ArgumentException($"argument error. argument: '{nameof(source)}' is broken or no png image binary.");
             }
