@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>KoyashiroKohaku.PngMetaDataTool.Test</RootNamespace>
+    <RootNamespace>KoyashiroKohaku.PngMetaDataUtil.Test</RootNamespace>
 
     <Version>0.1.0</Version>
 
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PngMetaDataTool\PngMetaDataTool.csproj" />
+    <ProjectReference Include="..\..\src\PngMetaDataUtil\PngMetaDataUtil.csproj" />
   </ItemGroup>
 
   <ItemGroup>
