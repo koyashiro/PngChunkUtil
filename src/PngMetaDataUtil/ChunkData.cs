@@ -39,7 +39,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
         }
 
         /// <summary>
-        /// <see cref="PngMetaDataParser"/>のSpan構造体を返却します。
+        /// <see cref="ChunkReader"/>のSpan構造体を返却します。
         /// </summary>
         public Span<byte> Value => _chunkData;
 

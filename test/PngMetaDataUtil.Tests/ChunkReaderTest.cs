@@ -6,7 +6,7 @@ using System.IO;
 namespace KoyashiroKohaku.PngMetaDataUtil.Tests
 {
     [TestClass]
-    public class PngMetaDataParserTest
+    public class ChunkReaderTest
     {
         private byte[] InvalidSource => File.ReadAllBytes(@"Assets/invalid.jpg");
         private byte[] ValidSource => File.ReadAllBytes(@"Assets/valid.png");
@@ -21,7 +21,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         public void Signature_Test()
         {
             var expected = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
-            var actual = PngMetaDataParser.Signature.ToArray();
+            var actual = ChunkReader.Signature.ToArray();
 
             var areEqual = expected.SequenceEqual(actual);
 
@@ -33,7 +33,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         {
             try
             {
-                PngMetaDataParser.IsPng(null);
+                ChunkReader.IsPng(null);
             }
             catch (ArgumentNullException)
             {
@@ -46,25 +46,25 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void IsPng_FalseTest()
         {
-            Assert.IsFalse(PngMetaDataParser.IsPng(InvalidSource));
+            Assert.IsFalse(ChunkReader.IsPng(InvalidSource));
         }
 
         [TestMethod]
         public void IsPng_TrueTest()
         {
-            Assert.IsTrue(PngMetaDataParser.IsPng(ValidSource));
+            Assert.IsTrue(ChunkReader.IsPng(ValidSource));
         }
 
         [TestMethod]
         public void IsPngSpan_FalseTest()
         {
-            Assert.IsFalse(PngMetaDataParser.IsPng(InvalidSource.AsSpan()));
+            Assert.IsFalse(ChunkReader.IsPng(InvalidSource.AsSpan()));
         }
 
         [TestMethod]
         public void IsPngSpan_TrueTest()
         {
-            Assert.IsTrue(PngMetaDataParser.IsPng(ValidSource.AsSpan()));
+            Assert.IsTrue(ChunkReader.IsPng(ValidSource.AsSpan()));
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         {
             try
             {
-                PngMetaDataParser.GetChunks(null);
+                ChunkReader.GetChunks(null);
             }
             catch (ArgumentNullException)
             {
@@ -87,7 +87,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         {
             try
             {
-                PngMetaDataParser.GetChunks(InvalidSource);
+                ChunkReader.GetChunks(InvalidSource);
             }
             catch (ArgumentException)
             {
@@ -100,7 +100,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_AllChunksTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.All).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.All).ToList();
 
             if (chunks.Count != 291)
             {
@@ -192,7 +192,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_CriticalChunkOnlyTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.CriticalChunkOnly).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.CriticalChunkOnly).ToList();
 
             var difference = chunks.Select(c => c.ChunkType.ToString()).Except(CriticalChunks);
 
@@ -202,7 +202,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_AncillaryChunkOnlyTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.AncillaryChunkOnly).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.AncillaryChunkOnly).ToList();
 
             var difference = chunks.Select(c => c.ChunkType.ToString()).Except(AncillaryChunks);
 
@@ -212,7 +212,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_AdditionalChunkOnlyTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.AdditionalChunkOnly).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.AdditionalChunkOnly).ToList();
 
             var difference = chunks.Select(c => c.ChunkType.ToString()).Intersect(CriticalChunks.Union(AncillaryChunks));
 

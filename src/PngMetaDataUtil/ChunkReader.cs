@@ -6,9 +6,9 @@ using System.Linq;
 namespace KoyashiroKohaku.PngMetaDataUtil
 {
     /// <summary>
-    /// MetaDataParser
+    /// ChunkReader
     /// </summary>
-    public static class PngMetaDataParser
+    public static class ChunkReader
     {
         /// <summary>
         /// PNG画像のシグネチャ
