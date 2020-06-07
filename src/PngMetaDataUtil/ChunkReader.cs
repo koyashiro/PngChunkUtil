@@ -92,6 +92,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 // [(length) byte] : ChunkData
                 var data = image.Slice(index + 8, length);
 
+                // [(length) byte] : CRC (not used)
+                // var crc = image.Slice(index + 8 + length, 4);
+
                 chunks.Add(new Chunk(type, data));
 
                 // to next chunk
