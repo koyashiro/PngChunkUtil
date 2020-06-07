@@ -29,11 +29,11 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
             {
                 var writedChunk = writedChunks[i];
                 var validChunk = validChunks[i];
-                if (writedChunk.ChunkType.ToString() != validChunk.ChunkType.ToString())
+                if (writedChunk.TypeString != validChunk.TypeString)
                 {
                     Assert.Fail();
                 }
-                if (writedChunk.ChunkData.ToString() != validChunk.ChunkData.ToString())
+                if (writedChunk.DataString != validChunk.DataString)
                 {
                     Assert.Fail();
                 }
@@ -70,10 +70,10 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
             Assert.AreEqual(chunks.Count + appendChunks.Length, appendedChunks.Count);
 
             Assert.IsFalse(appendedChunks.All(c =>
-                (c.ChunkType.ToString() == appendChunks[0].ChunkType.ToString() && c.ChunkData.ToString() == appendChunks[0].ChunkData.ToString())
-                || (c.ChunkType.ToString() == appendChunks[1].ChunkType.ToString() && c.ChunkData.ToString() == appendChunks[1].ChunkData.ToString())
-                || (c.ChunkType.ToString() == appendChunks[2].ChunkType.ToString() && c.ChunkData.ToString() == appendChunks[2].ChunkData.ToString())
-                || (c.ChunkType.ToString() == appendChunks[3].ChunkType.ToString() && c.ChunkData.ToString() == appendChunks[3].ChunkData.ToString())
+                (c.TypeString == appendChunks[0].TypeString && c.DataString == appendChunks[0].DataString)
+                || (c.TypeString == appendChunks[1].TypeString && c.DataString == appendChunks[1].DataString)
+                || (c.TypeString == appendChunks[2].TypeString && c.DataString == appendChunks[2].DataString)
+                || (c.TypeString == appendChunks[3].TypeString && c.DataString == appendChunks[3].DataString)
             ));
         }
 
@@ -84,7 +84,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
             var removedImage = ChunkWriter.RemoveChunk(ValidImage, "vrCd", "vrCw", "vrCp", "vrCu");
             var removedChunks = ChunkReader.GetChunks(removedImage);
 
-            Assert.IsFalse(removedChunks.Any(c => c.ChunkType.ToString() == "vrCp" || c.ChunkType.ToString() == "vrCw" || c.ChunkType.ToString() == "vrCp" || c.ChunkType.ToString() == "vrCu"));
+            Assert.IsFalse(removedChunks.Any(c => c.TypeString == "vrCp" || c.TypeString == "vrCw" || c.TypeString == "vrCp" || c.TypeString == "vrCu"));
         }
     }
 }
