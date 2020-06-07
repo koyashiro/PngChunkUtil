@@ -3,9 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>KoyashiroKohaku.PngMetaDataUtil</RootNamespace>
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
     <Authors>Koyashiro Kohaku</Authors>
     <RepositoryUrl>https://github.com/KoyashiroKohaku/PngMetaDataUtil</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Crc32.NET" Version="1.2.0" />
+  </ItemGroup>
 
 </Project>

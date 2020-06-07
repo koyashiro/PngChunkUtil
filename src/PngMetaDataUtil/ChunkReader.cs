@@ -6,15 +6,10 @@ using System.Linq;
 namespace KoyashiroKohaku.PngMetaDataUtil
 {
     /// <summary>
-    /// MetaDataParser
+    /// ChunkReader
     /// </summary>
-    public static class PngMetaDataParser
+    public static class ChunkReader
     {
-        /// <summary>
-        /// PNG画像のシグネチャ
-        /// </summary>
-        public static ReadOnlySpan<byte> Signature => new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
-
         /// <summary>
         /// PNG画像かどうかをチェックします。
         /// </summary>
@@ -47,20 +42,20 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 return false;
             }
 
-            return source.Slice(0, 8).SequenceEqual(Signature);
+            return source.Slice(0, 8).SequenceEqual(PngUtil.Signature);
         }
 
         /// <summary>
         /// PNG画像から'IHDR', 'IDAT', 'IEND'を除くチャンクをすべて抽出します。
         /// </summary>
-        /// <param name = "source" > PNG画像のbyte配列 </ param >
+        /// <param name = "image" > PNG画像のbyte配列 </ param >
         /// < param name="expression">抽出条件</param>
         /// <returns></returns>
-        public static List<Chunk> GetChunks(byte[] source, ChunkTypeFilter chunkTypeFilter = ChunkTypeFilter.All)
+        public static List<Chunk> GetChunks(ReadOnlySpan<byte> image, ChunkTypeFilter chunkTypeFilter = ChunkTypeFilter.All)
         {
-            if (source is null)
+            if (image == null)
             {
-                throw new ArgumentNullException($"argument error. argument: '{nameof(source)}' is null.");
+                throw new ArgumentNullException($"argument error. argument: '{nameof(image)}' is null.");
             }
 
             if (!Enum.IsDefined(typeof(ChunkTypeFilter), chunkTypeFilter))
@@ -68,11 +63,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 throw new ArgumentException();
             }
 
-            var span = source.AsSpan();
-
-            if (!span.Slice(0, 8).SequenceEqual(Signature))
+            if (!image.Slice(0, 8).SequenceEqual(PngUtil.Signature))
             {
-                throw new ArgumentException($"argument error. argument: '{nameof(source)}' is broken or no png image binary.");
+                throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
             }
 
             // 先頭のシグネチャを除く
@@ -80,13 +73,13 @@ namespace KoyashiroKohaku.PngMetaDataUtil
 
             var chunks = new List<Chunk>();
 
-            while (index < span.Length)
+            while (index < image.Length)
             {
                 // [4 byte] : Length of ChunkData
-                var length = BinaryPrimitives.ReadInt32BigEndian(span.Slice(index, 4));
+                var length = BinaryPrimitives.ReadInt32BigEndian(image.Slice(index, 4));
 
                 // [4 byte] : ChunkType
-                var type = span.Slice(index + 4, 4);
+                var type = image.Slice(index + 4, 4);
 
                 if (!IsTargetChunk(type, chunkTypeFilter))
                 {
@@ -97,7 +90,10 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 }
 
                 // [(length) byte] : ChunkData
-                var data = span.Slice(index + 8, length);
+                var data = image.Slice(index + 8, length);
+
+                // [(length) byte] : CRC (not used)
+                // var crc = image.Slice(index + 8 + length, 4);
 
                 chunks.Add(new Chunk(type, data));
 

@@ -6,7 +6,7 @@ using System.IO;
 namespace KoyashiroKohaku.PngMetaDataUtil.Tests
 {
     [TestClass]
-    public class PngMetaDataParserTest
+    public class ChunkReaderTest
     {
         private byte[] InvalidSource => File.ReadAllBytes(@"Assets/invalid.jpg");
         private byte[] ValidSource => File.ReadAllBytes(@"Assets/valid.png");
@@ -21,7 +21,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         public void Signature_Test()
         {
             var expected = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
-            var actual = PngMetaDataParser.Signature.ToArray();
+            var actual = PngUtil.Signature.ToArray();
 
             var areEqual = expected.SequenceEqual(actual);
 
@@ -33,7 +33,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         {
             try
             {
-                PngMetaDataParser.IsPng(null);
+                ChunkReader.IsPng(null);
             }
             catch (ArgumentNullException)
             {
@@ -46,25 +46,25 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void IsPng_FalseTest()
         {
-            Assert.IsFalse(PngMetaDataParser.IsPng(InvalidSource));
+            Assert.IsFalse(ChunkReader.IsPng(InvalidSource));
         }
 
         [TestMethod]
         public void IsPng_TrueTest()
         {
-            Assert.IsTrue(PngMetaDataParser.IsPng(ValidSource));
+            Assert.IsTrue(ChunkReader.IsPng(ValidSource));
         }
 
         [TestMethod]
         public void IsPngSpan_FalseTest()
         {
-            Assert.IsFalse(PngMetaDataParser.IsPng(InvalidSource.AsSpan()));
+            Assert.IsFalse(ChunkReader.IsPng(InvalidSource.AsSpan()));
         }
 
         [TestMethod]
         public void IsPngSpan_TrueTest()
         {
-            Assert.IsTrue(PngMetaDataParser.IsPng(ValidSource.AsSpan()));
+            Assert.IsTrue(ChunkReader.IsPng(ValidSource.AsSpan()));
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         {
             try
             {
-                PngMetaDataParser.GetChunks(null);
+                ChunkReader.GetChunks(null);
             }
             catch (ArgumentNullException)
             {
@@ -87,7 +87,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         {
             try
             {
-                PngMetaDataParser.GetChunks(InvalidSource);
+                ChunkReader.GetChunks(InvalidSource);
             }
             catch (ArgumentException)
             {
@@ -100,7 +100,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_AllChunksTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.All).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.All).ToList();
 
             if (chunks.Count != 291)
             {
@@ -108,7 +108,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
             }
 
             // 0: IHDR
-            if (chunks[0].ChunkType.ToString() != "IHDR")
+            if (chunks[0].TypeString != "IHDR")
             {
                 Assert.Fail("IHDR error.");
             }
@@ -116,7 +116,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
             // 1-283: IDAT
             foreach (var chunk in chunks.GetRange(1, 283))
             {
-                if (chunk.ChunkType.ToString() != "IDAT")
+                if (chunk.TypeString != "IDAT")
                 {
                     Assert.Fail("IDAT error.");
                 }
@@ -124,66 +124,66 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
 
             // 284: vrCd
             var dateChunk = chunks[284];
-            if (dateChunk.ChunkType.ToString() != "vrCd")
+            if (dateChunk.TypeString != "vrCd")
             {
                 Assert.Fail("vrCd error.");
             }
-            if (dateChunk.ChunkData.ToString() != "20200603013244672")
+            if (dateChunk.DataString != "20200603013244672")
             {
                 Assert.Fail("vrCd error.");
             }
 
             // 285: vrCp
             var photographerChunk = chunks[285];
-            if (photographerChunk.ChunkType.ToString() != "vrCp")
+            if (photographerChunk.TypeString != "vrCp")
             {
                 Assert.Fail("vrCp error.");
             }
-            if (photographerChunk.ChunkData.ToString() != "KoyashiroKohaku")
+            if (photographerChunk.DataString != "KoyashiroKohaku")
             {
                 Assert.Fail("vrCp error.");
             }
 
             // 286: vrCw
             var worldChunk = chunks[286];
-            if (worldChunk.ChunkType.ToString() != "vrCw")
+            if (worldChunk.TypeString != "vrCw")
             {
                 Assert.Fail("vrCw error.");
             }
-            if (worldChunk.ChunkData.ToString() != "ミツキツネ家")
+            if (worldChunk.DataString != "ミツキツネ家")
             {
                 Assert.Fail("vrCw error.");
             }
 
             // 287-289: vrCu
             var playerChunks = chunks.GetRange(287, 3);
-            if (playerChunks[0].ChunkType.ToString() != "vrCu")
+            if (playerChunks[0].TypeString != "vrCu")
             {
                 Assert.Fail("vrCu error.");
             }
-            if (playerChunks[0].ChunkData.ToString() != "KoyashiroKohaku")
+            if (playerChunks[0].DataString != "KoyashiroKohaku")
             {
                 Assert.Fail("vrCu error.");
             }
-            if (playerChunks[1].ChunkType.ToString() != "vrCu")
+            if (playerChunks[1].TypeString != "vrCu")
             {
                 Assert.Fail("vrCu error.");
             }
-            if (playerChunks[1].ChunkData.ToString() != "gatosyocora")
+            if (playerChunks[1].DataString != "gatosyocora")
             {
                 Assert.Fail("vrCu error.");
             }
-            if (playerChunks[2].ChunkType.ToString() != "vrCu")
+            if (playerChunks[2].TypeString != "vrCu")
             {
                 Assert.Fail("vrCu error.");
             }
-            if (playerChunks[2].ChunkData.ToString() != "mitsu_kitsune")
+            if (playerChunks[2].DataString != "mitsu_kitsune")
             {
                 Assert.Fail("vrCu error.");
             }
 
             // 290: IEND
-            if (chunks[290].ChunkType.ToString() != "IEND")
+            if (chunks[290].TypeString != "IEND")
             {
                 Assert.Fail("IEND error.");
             }
@@ -192,9 +192,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_CriticalChunkOnlyTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.CriticalChunkOnly).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.CriticalChunkOnly).ToList();
 
-            var difference = chunks.Select(c => c.ChunkType.ToString()).Except(CriticalChunks);
+            var difference = chunks.Select(c => c.TypeString).Except(CriticalChunks);
 
             Assert.IsFalse(difference.Any());
         }
@@ -202,9 +202,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_AncillaryChunkOnlyTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.AncillaryChunkOnly).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.AncillaryChunkOnly).ToList();
 
-            var difference = chunks.Select(c => c.ChunkType.ToString()).Except(AncillaryChunks);
+            var difference = chunks.Select(c => c.TypeString).Except(AncillaryChunks);
 
             Assert.IsFalse(difference.Any());
         }
@@ -212,9 +212,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void GetChunks_AdditionalChunkOnlyTest()
         {
-            var chunks = PngMetaDataParser.GetChunks(ValidSource, ChunkTypeFilter.AdditionalChunkOnly).ToList();
+            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.AdditionalChunkOnly).ToList();
 
-            var difference = chunks.Select(c => c.ChunkType.ToString()).Intersect(CriticalChunks.Union(AncillaryChunks));
+            var difference = chunks.Select(c => c.TypeString).Intersect(CriticalChunks.Union(AncillaryChunks));
 
             Assert.IsFalse(difference.Any());
         }
