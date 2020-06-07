@@ -20,16 +20,34 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void WriteImage_Test()
         {
-            var chunks = ChunkReader.GetChunks(ValidImage).ToArray();
+            var validChunks = ChunkReader.GetChunks(ValidImage).ToArray();
 
-            var writedImage = ChunkWriter.WriteImage(chunks);
-            var writedChunks = ChunkReader.GetChunks(writedImage);
+            var writedImage = ChunkWriter.WriteImage(validChunks);
+            var writedChunks = ChunkReader.GetChunks(writedImage).ToArray();
 
-            var result = writedChunks
-                .Select(c => (c.ChunkType.ToString(), c.ChunkData.ToString()))
-                .SequenceEqual(chunks.Select(c => (c.ChunkType.ToString(), c.ChunkData.ToString())));
+            for (int i = 0; i < validChunks.Length; i++)
+            {
+                var writedChunk = writedChunks[i];
+                var validChunk = validChunks[i];
+                if (writedChunk.ChunkType.ToString() != validChunk.ChunkType.ToString())
+                {
+                    Assert.Fail();
+                }
+                if (writedChunk.ChunkData.ToString() != validChunk.ChunkData.ToString())
+                {
+                    Assert.Fail();
+                }
+            }
 
-            Assert.IsTrue(result);
+            for (int i = 0; i < ValidImage.Length; i++)
+            {
+                var writed = writedImage[i];
+                var valid = ValidImage[i];
+                if (writed != valid)
+                {
+                    Assert.Fail();
+                }
+            }
 
             File.WriteAllBytes(@"output.png", writedImage);
         }
