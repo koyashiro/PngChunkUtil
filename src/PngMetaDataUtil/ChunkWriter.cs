@@ -18,28 +18,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil
             // [4 byte] : Signature
             binaryWriter.Write(PngUtil.Signature);
 
-            Span<byte> length = stackalloc byte[4];
-            Span<byte> crc = stackalloc byte[4];
-
             foreach (var chunk in chunks)
             {
-                // [4 byte] : Length of ChunkData
-                BinaryPrimitives.WriteInt32BigEndian(length, chunk.ChunkDataLength);
-                binaryWriter.Write(length);
-
-                // [4 byte] : ChunkType
-                binaryWriter.Write(chunk.ChunkType.Value);
-
-                // [(length) byte] : ChunkData
-                binaryWriter.Write(chunk.ChunkData.Value);
-
-                var typeAndData = new byte[(4 + chunk.ChunkDataLength)];
-                chunk.ChunkType.Value.CopyTo(typeAndData.AsSpan().Slice(0, 4));
-                chunk.ChunkData.Value.CopyTo(typeAndData.AsSpan().Slice(4, chunk.ChunkDataLength));
-
-                // [4 byte] : CRC
-                BinaryPrimitives.WriteUInt32BigEndian(crc, Crc32Algorithm.Compute(typeAndData));
-                binaryWriter.Write(crc);
+                binaryWriter.Write(chunk.Value);
             }
 
             return memoryStream.ToArray();
@@ -59,18 +40,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
 
             foreach (var chunk in chunks)
             {
-                // [4 byte] : Length of ChunkData
-                BinaryPrimitives.WriteInt32BigEndian(length, chunk.ChunkDataLength);
-                binaryWriter.Write(length);
-
-                // [4 byte] : ChunkType
-                binaryWriter.Write(chunk.ChunkType.Value);
-
-                // [(length) byte] : ChunkData
-                binaryWriter.Write(chunk.ChunkData.Value);
-
-                // [4 byte] : CRC
-                binaryWriter.Write(new byte[4]);
+                binaryWriter.Write(chunk.Value);
             }
 
             return memoryStream.ToArray();
@@ -78,7 +48,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
 
         public static byte[] RemoveChunk(ReadOnlySpan<byte> image, params string[] chunkTypes)
         {
-            var chunks = ChunkReader.GetChunks(image).Where(c => !chunkTypes.Any(ct => ct == c.ChunkType.ToString())).ToArray();
+            var chunks = ChunkReader.GetChunks(image).Where(c => !chunkTypes.Any(ct => ct == c.TypeString)).ToArray();
 
             using var memoryStream = new MemoryStream();
             using var binaryWriter = new BinaryWriter(memoryStream);
@@ -89,40 +59,8 @@ namespace KoyashiroKohaku.PngMetaDataUtil
 
             foreach (var chunk in chunks)
             {
-                // [4 byte] : Length of ChunkData
-                BinaryPrimitives.WriteInt32BigEndian(length, chunk.ChunkDataLength);
-                binaryWriter.Write(length);
-
-                // [4 byte] : ChunkType
-                binaryWriter.Write(chunk.ChunkType.Value);
-
-                // [(length) byte] : ChunkData
-                binaryWriter.Write(chunk.ChunkData.Value);
-
-                // [4 byte] : CRC
-                binaryWriter.Write(new byte[4]);
+                binaryWriter.Write(chunk.Value);
             }
-
-            //for (int i = 0; i < chunks.Length; i++)
-            //{
-            //    var chunk = chunks[i];
-
-            //    // [4 byte] : Length of ChunkData
-            //    BinaryPrimitives.WriteInt32BigEndian(length, chunk.ChunkDataLength);
-            //    binaryWriter.Write(length);
-
-            //    // [4 byte] : ChunkType
-            //    binaryWriter.Write(chunk.ChunkType.Value);
-
-            //    // [(length) byte] : ChunkData
-            //    binaryWriter.Write(chunk.ChunkData.Value);
-
-            //    if (i+1 != chunks.Length)
-            //    {
-            //        // [4 byte] : CRC
-            //        binaryWriter.Write(new byte[4]);
-            //    }
-            //}
 
             return memoryStream.ToArray();
         }
