@@ -39,15 +39,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
                 }
             }
 
-            for (int i = 0; i < ValidImage.Length; i++)
-            {
-                var writed = writedImage[i];
-                var valid = ValidImage[i];
-                if (writed != valid)
-                {
-                    Assert.Fail();
-                }
-            }
+            Assert.IsTrue(writedImage.SequenceEqual(ValidImage));
 
             File.WriteAllBytes(@"output.png", writedImage);
         }

@@ -3,6 +3,7 @@ using KoyashiroKohaku.PngMetaDataUtil;
 using System;
 using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 
 namespace KoyashiroKohaku.PngMetaDataUtil.Tests
 {
@@ -29,9 +30,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         public void Constructor_WithNoArgmentTest()
         {
             var chunk = new Chunk();
-
+           
             Assert.IsTrue(chunk.TypePart.SequenceEqual(new byte[4]));
-            Assert.IsTrue(chunk.DataPart.SequenceEqual(new byte[8]));
+            Assert.IsTrue(chunk.DataPart.SequenceEqual(Enumerable.Empty<byte>().ToArray()));
         }
 
         [TestMethod]

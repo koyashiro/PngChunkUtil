@@ -61,10 +61,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil
             var typeByte = Encoding.UTF8.GetBytes(type);
             var dataByte = Encoding.UTF8.GetBytes(data);
 
-            var length = typeByte.Length;
-            _value = new byte[12 + length];
+            _value = new byte[12 + dataByte.Length];
 
-            BinaryPrimitives.WriteInt32BigEndian(WritableLengthPart, length);
+            BinaryPrimitives.WriteInt32BigEndian(WritableLengthPart, dataByte.Length);
             typeByte.CopyTo(WritableTypePart);
             dataByte.CopyTo(WritableDataPart);
             BinaryPrimitives.WriteUInt32BigEndian(WritableCrcPart, CalculateCrc(type, data));
@@ -73,7 +72,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
         public Span<byte> WritableValue => _value.AsSpan();
 
         private Span<byte> WritableLengthPart => _value.AsSpan().Slice(0, 4);
-        private Span<byte> WritableTypePart => _value.AsSpan().Slice(4, 8);
+        private Span<byte> WritableTypePart => _value.AsSpan().Slice(4, 4);
         private Span<byte> WritableDataPart => _value.AsSpan().Slice(8, LengthPartInt);
         private Span<byte> WritableCrcPart => _value.AsSpan().Slice(8 + LengthPartInt, 4);
 
