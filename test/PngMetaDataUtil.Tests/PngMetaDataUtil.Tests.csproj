@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -7,7 +7,7 @@
 
     <RootNamespace>KoyashiroKohaku.PngMetaDataUtil.Test</RootNamespace>
 
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
 
     <Authors>Koyashiro Kohaku</Authors>
   </PropertyGroup>
