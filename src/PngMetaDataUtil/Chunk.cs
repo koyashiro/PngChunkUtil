@@ -201,9 +201,9 @@ namespace KoyashiroKohaku.PngMetaDataUtil
             var typeByte = Encoding.UTF8.GetBytes(type).AsSpan();
             var dataByte = Encoding.UTF8.GetBytes(data).AsSpan();
 
-            var source = new byte[type.Length + data.Length];
+            var source = new byte[type.Length + dataByte.Length];
             typeByte.CopyTo(source.AsSpan().Slice(0, 4));
-            dataByte.CopyTo(source.AsSpan().Slice(4, data.Length));
+            dataByte.CopyTo(source.AsSpan().Slice(4, dataByte.Length));
 
             return Crc32Algorithm.Compute(source);
         }

@@ -38,25 +38,39 @@ namespace KoyashiroKohaku.PngMetaDataUtil.Tests
         [TestMethod]
         public void Constructor_WithByteSpanTest()
         {
-            var chunk = new Chunk(IdatChunkTypeByteArray, SingleByteChunkDataByteArray);
+            var singleByteChunk = new Chunk(IdatChunkTypeByteArray, SingleByteChunkDataByteArray);
+            var multiByteChunk = new Chunk(IdatChunkTypeByteArray, MultiByteChunkDataByteArray);
 
-            Assert.IsTrue(chunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
-            Assert.AreEqual(chunk.TypeString, IdatChunkTypeString);
+            Assert.IsTrue(singleByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
+            Assert.AreEqual(singleByteChunk.TypeString, IdatChunkTypeString);
 
-            Assert.IsTrue(chunk.DataPart.SequenceEqual(SingleByteChunkDataByteArray));
-            Assert.AreEqual(chunk.DataString, SingleByteChunkDataString);
+            Assert.IsTrue(singleByteChunk.DataPart.SequenceEqual(SingleByteChunkDataByteArray));
+            Assert.AreEqual(singleByteChunk.DataString, SingleByteChunkDataString);
+
+            Assert.IsTrue(multiByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
+            Assert.AreEqual(multiByteChunk.TypeString, IdatChunkTypeString);
+
+            Assert.IsTrue(multiByteChunk.DataPart.SequenceEqual(MultiByteChunkDataByteArray));
+            Assert.AreEqual(multiByteChunk.DataString, MultiByteChunkDataString);
         }
 
         [TestMethod]
         public void Constructor_WithCharSpanTest()
         {
-            var chunk = new Chunk(IdatChunkTypeString, SingleByteChunkDataString);
+            var singleByteChunk = new Chunk(IdatChunkTypeString, SingleByteChunkDataString);
+            var multiByteChunk = new Chunk(IdatChunkTypeString, MultiByteChunkDataString);
 
-            Assert.IsTrue(chunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
-            Assert.AreEqual(chunk.TypeString, IdatChunkTypeString);
+            Assert.IsTrue(singleByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
+            Assert.AreEqual(singleByteChunk.TypeString, IdatChunkTypeString);
 
-            Assert.IsTrue(chunk.DataPart.SequenceEqual(SingleByteChunkDataByteArray));
-            Assert.AreEqual(chunk.DataString, SingleByteChunkDataString);
+            Assert.IsTrue(singleByteChunk.DataPart.SequenceEqual(SingleByteChunkDataByteArray));
+            Assert.AreEqual(singleByteChunk.DataString, SingleByteChunkDataString);
+
+            Assert.IsTrue(multiByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
+            Assert.AreEqual(multiByteChunk.TypeString, IdatChunkTypeString);
+
+            Assert.IsTrue(multiByteChunk.DataPart.SequenceEqual(MultiByteChunkDataByteArray));
+            Assert.AreEqual(multiByteChunk.DataString, MultiByteChunkDataString);
         }
     }
 }
