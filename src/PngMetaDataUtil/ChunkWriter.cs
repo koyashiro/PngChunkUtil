@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Force.Crc32;
 
 namespace KoyashiroKohaku.PngMetaDataUtil
 {
-    public class ChunkWriter
+    public static class ChunkWriter
     {
         public static byte[] WriteImage(ReadOnlySpan<Chunk> chunks)
         {
@@ -18,6 +19,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
             binaryWriter.Write(PngUtil.Signature);
 
             Span<byte> length = stackalloc byte[4];
+            Span<byte> crc = stackalloc byte[4];
 
             foreach (var chunk in chunks)
             {
@@ -31,8 +33,13 @@ namespace KoyashiroKohaku.PngMetaDataUtil
                 // [(length) byte] : ChunkData
                 binaryWriter.Write(chunk.ChunkData.Value);
 
+                var typeAndData = new byte[(4 + chunk.ChunkDataLength)];
+                chunk.ChunkType.Value.CopyTo(typeAndData.AsSpan().Slice(0, 4));
+                chunk.ChunkData.Value.CopyTo(typeAndData.AsSpan().Slice(4, chunk.ChunkDataLength));
+
                 // [4 byte] : CRC
-                binaryWriter.Write(new byte[4]);
+                BinaryPrimitives.WriteUInt32BigEndian(crc, Crc32Algorithm.Compute(typeAndData));
+                binaryWriter.Write(crc);
             }
 
             return memoryStream.ToArray();
