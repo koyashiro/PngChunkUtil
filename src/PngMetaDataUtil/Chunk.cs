@@ -1,8 +1,5 @@
 using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using Force.Crc32;
 
