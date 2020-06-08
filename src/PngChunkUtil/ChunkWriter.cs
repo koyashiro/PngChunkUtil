@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Force.Crc32;
 
-namespace KoyashiroKohaku.PngMetaDataUtil
+namespace KoyashiroKohaku.PngChunkUtil
 {
     public static class ChunkWriter
     {
@@ -29,7 +29,7 @@ namespace KoyashiroKohaku.PngMetaDataUtil
         public static byte[] AddChunk(ReadOnlySpan<byte> image, params Chunk[] appendChunks)
         {
             var chunks = ChunkReader.GetChunks(image);
-            chunks.InsertRange(chunks.Count - 2, appendChunks);
+            chunks.InsertRange(chunks.Count - 1, appendChunks);
 
             using var memoryStream = new MemoryStream();
             using var binaryWriter = new BinaryWriter(memoryStream);

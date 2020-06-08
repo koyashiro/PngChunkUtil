@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using KoyashiroKohaku.PngMetaDataUtil;
+using KoyashiroKohaku.PngChunkUtil;
 using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
-namespace KoyashiroKohaku.PngMetaDataUtil.Tests
+namespace KoyashiroKohaku.PngChunkUtil.Tests
 {
     [TestClass]
     public class ChunkTest

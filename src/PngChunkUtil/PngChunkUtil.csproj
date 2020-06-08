@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>KoyashiroKohaku.PngMetaDataUtil</RootNamespace>
-    <Version>0.1.4</Version>
+    <RootNamespace>KoyashiroKohaku.PngChunkUtil</RootNamespace>
+    <Version>0.1.5</Version>
     <Authors>Koyashiro Kohaku</Authors>
-    <RepositoryUrl>https://github.com/KoyashiroKohaku/PngMetaDataUtil</RepositoryUrl>
+    <RepositoryUrl>https://github.com/KoyashiroKohaku/PngChunkUtil</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
