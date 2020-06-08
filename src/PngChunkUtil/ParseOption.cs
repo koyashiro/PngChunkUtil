@@ -1,4 +1,4 @@
-namespace KoyashiroKohaku.PngMetaDataUtil
+namespace KoyashiroKohaku.PngChunkUtil
 {
     public enum ChunkTypeFilter
     {

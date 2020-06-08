@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.IO;
 
-namespace KoyashiroKohaku.PngMetaDataUtil.Tests
+namespace KoyashiroKohaku.PngChunkUtil.Tests
 {
     [TestClass]
     public class ChunkReaderTest

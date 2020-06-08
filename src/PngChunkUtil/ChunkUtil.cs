@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace KoyashiroKohaku.PngMetaDataUtil
+namespace KoyashiroKohaku.PngChunkUtil
 {
     public static class ChunkUtil
     {

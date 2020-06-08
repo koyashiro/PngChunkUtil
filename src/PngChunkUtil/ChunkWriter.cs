@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Force.Crc32;
 
-namespace KoyashiroKohaku.PngMetaDataUtil
+namespace KoyashiroKohaku.PngChunkUtil
 {
     public static class ChunkWriter
     {

@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>KoyashiroKohaku.PngMetaDataUtil.Test</RootNamespace>
+    <RootNamespace>KoyashiroKohaku.PngChunkUtil.Test</RootNamespace>
 
     <Version>0.1.4</Version>
 
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PngMetaDataUtil\PngMetaDataUtil.csproj" />
+    <ProjectReference Include="..\..\src\PngChunkUtil\PngChunkUtil.csproj" />
   </ItemGroup>
 
   <ItemGroup>

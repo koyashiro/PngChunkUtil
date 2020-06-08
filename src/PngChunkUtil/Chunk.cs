@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.Text;
 using Force.Crc32;
 
-namespace KoyashiroKohaku.PngMetaDataUtil
+namespace KoyashiroKohaku.PngChunkUtil
 {
     /// <summary>
     /// Chunk
