@@ -75,6 +75,11 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             while (index < image.Length)
             {
+                if (index + 8 > image.Length)
+                {
+                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                }
+
                 // [4 byte] : Length of ChunkData
                 var length = BinaryPrimitives.ReadInt32BigEndian(image.Slice(index, 4));
 
@@ -89,8 +94,18 @@ namespace KoyashiroKohaku.PngChunkUtil
                     continue;
                 }
 
+                if (index + 8 + length > image.Length)
+                {
+                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                }
+
                 // [(length) byte] : ChunkData
                 var data = image.Slice(index + 8, length);
+
+                if (index + 8 + length + 4 > image.Length)
+                {
+                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                }
 
                 // [(length) byte] : CRC (not used)
                 // var crc = image.Slice(index + 8 + length, 4);
