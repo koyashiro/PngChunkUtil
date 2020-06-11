@@ -2,12 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
     public static class ChunkWriter
     {
+        /// <summary>
+        /// チャンクからPNG画像のbyte配列を生成します。
+        /// </summary>
+        /// <param name="chunks"></param>
+        /// <returns></returns>
         public static byte[] WriteImageBytes(IEnumerable<Chunk> chunks)
         {
             if (chunks == null)
@@ -33,5 +39,12 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             return memoryStream.ToArray();
         }
+
+        /// <summary>
+        /// チャンクからPNG画像のbyte配列を生成します。
+        /// </summary>
+        /// <param name="chunks"></param>
+        /// <returns></returns>
+        public static Task<byte[]> WriteImageAllBytesAsync(IEnumerable<Chunk> chunks) => Task.Run(() => WriteImageBytes(chunks));
     }
 }
