@@ -1,6 +1,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace KoyashiroKohaku.PngChunkUtil
@@ -11,59 +12,24 @@ namespace KoyashiroKohaku.PngChunkUtil
     public static class ChunkReader
     {
         /// <summary>
-        /// PNG画像かどうかをチェックします。
-        /// </summary>
-        /// <param name="source">PNG画像のbyte配列</param>
-        /// <returns></returns>
-        public static bool IsPng(byte[] source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException($"argument error. argument: '{nameof(source)}' is null.");
-            }
-
-            return IsPng(source.AsSpan());
-        }
-
-        /// <summary>
-        /// PNG画像かどうかをチェックします。
-        /// </summary>
-        /// <param name="source">PNG画像のSpan構造体</param>
-        /// <returns></returns>
-        public static bool IsPng(ReadOnlySpan<byte> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException($"argument error. argument: '{nameof(source)}' is null.");
-            }
-
-            if (source.Length < 8)
-            {
-                return false;
-            }
-
-            return source.Slice(0, 8).SequenceEqual(PngUtil.Signature);
-        }
-
-        /// <summary>
-        /// PNG画像から'IHDR', 'IDAT', 'IEND'を除くチャンクをすべて抽出します。
+        /// PNG画像からチャンクを抽出します。
         /// </summary>
         /// <param name = "image" > PNG画像のbyte配列 </ param >
         /// < param name="expression">抽出条件</param>
         /// <returns></returns>
-        public static List<Chunk> GetChunks(ReadOnlySpan<byte> image, ChunkTypeFilter chunkTypeFilter = ChunkTypeFilter.All)
+        public static List<Chunk> SplitChunks(ReadOnlySpan<byte> image, ChunkTypeFilter chunkTypeFilter = ChunkTypeFilter.All)
         {
             if (image == null)
             {
-                throw new ArgumentNullException($"argument error. argument: '{nameof(image)}' is null.");
+                throw new ArgumentNullException(nameof(image));
             }
 
             if (!Enum.IsDefined(typeof(ChunkTypeFilter), chunkTypeFilter))
             {
-                throw new ArgumentException();
+                throw new InvalidEnumArgumentException(nameof(chunkTypeFilter), (int)chunkTypeFilter, typeof(ChunkTypeFilter));
             }
 
-            if (!image.Slice(0, 8).SequenceEqual(PngUtil.Signature))
+            if (!PngUtil.IsPng(image))
             {
                 throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
             }
@@ -83,6 +49,11 @@ namespace KoyashiroKohaku.PngChunkUtil
                 // [4 byte] : Length of ChunkData
                 var length = BinaryPrimitives.ReadInt32BigEndian(image.Slice(index, 4));
 
+                if (index + 12 + length > image.Length)
+                {
+                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                }
+
                 // [4 byte] : ChunkType
                 var type = image.Slice(index + 4, 4);
 
@@ -94,11 +65,6 @@ namespace KoyashiroKohaku.PngChunkUtil
                     continue;
                 }
 
-                if (index + 8 + length > image.Length)
-                {
-                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
-                }
-
                 // [(length) byte] : ChunkData
                 var data = image.Slice(index + 8, length);
 
@@ -108,9 +74,17 @@ namespace KoyashiroKohaku.PngChunkUtil
                 }
 
                 // [(length) byte] : CRC (not used)
-                // var crc = image.Slice(index + 8 + length, 4);
+                var crc = image.Slice(index + 8 + length, 4);
 
-                chunks.Add(new Chunk(type, data));
+                var chunk = new Chunk(type, data);
+
+                // CRC check
+                if (!crc.SequenceEqual(chunk.CrcPart))
+                {
+                    throw new Exception();
+                }
+
+                chunks.Add(chunk);
 
                 // to next chunk
                 index += 4 + 4 + length + 4;
@@ -119,11 +93,94 @@ namespace KoyashiroKohaku.PngChunkUtil
             return chunks;
         }
 
+        public static bool TrySplitChunks(ReadOnlySpan<byte> image, out List<Chunk>? chunks, ChunkTypeFilter chunkTypeFilter = ChunkTypeFilter.All)
+        {
+            if (image == null)
+            {
+                chunks = null;
+                return false;
+            }
+
+            if (!Enum.IsDefined(typeof(ChunkTypeFilter), chunkTypeFilter))
+            {
+                chunks = null;
+                return false;
+            }
+
+            if (!PngUtil.IsPng(image))
+            {
+                chunks = null;
+                return false;
+            }
+
+            // 先頭のシグネチャを除く
+            var index = 8;
+
+            chunks = new List<Chunk>();
+
+            while (index < image.Length)
+            {
+                if (index + 8 > image.Length)
+                {
+                    chunks = null;
+                    return false;
+                }
+
+                // [4 byte] : Length of ChunkData
+                var length = BinaryPrimitives.ReadInt32BigEndian(image.Slice(index, 4));
+
+                if (index + 12 + length > image.Length)
+                {
+                    chunks = null;
+                    return false;
+                }
+
+                // [4 byte] : ChunkType
+                var type = image.Slice(index + 4, 4);
+
+                if (!IsTargetChunk(type, chunkTypeFilter))
+                {
+                    // to next chunk
+                    index += 4 + 4 + length + 4;
+
+                    continue;
+                }
+
+                // [(length) byte] : ChunkData
+                var data = image.Slice(index + 8, length);
+
+                if (index + 8 + length + 4 > image.Length)
+                {
+                    chunks = null;
+                    return false;
+                }
+
+                // [(length) byte] : CRC (not used)
+                var crc = image.Slice(index + 8 + length, 4);
+
+                var chunk = new Chunk(type, data);
+
+                // CRC check
+                if (!crc.SequenceEqual(chunk.CrcPart))
+                {
+                    chunks = null;
+                    return false;
+                }
+
+                chunks.Add(chunk);
+
+                // to next chunk
+                index += 4 + 4 + length + 4;
+            }
+
+            return true;
+        }
+
         public static bool IsTargetChunk(ReadOnlySpan<byte> chunkType, ChunkTypeFilter chunkTypeFilter)
         {
             if (chunkType == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(chunkType));
             }
 
             if (chunkType.Length != 4)
@@ -133,7 +190,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (!Enum.IsDefined(typeof(ChunkTypeFilter), chunkTypeFilter))
             {
-                throw new ArgumentException();
+                throw new InvalidEnumArgumentException(nameof(chunkTypeFilter), (int)chunkTypeFilter, typeof(ChunkTypeFilter));
             }
 
             return chunkTypeFilter switch
