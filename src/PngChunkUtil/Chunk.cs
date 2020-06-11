@@ -35,13 +35,21 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         public Chunk(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)
         {
-            if (type == null || data == null)
+            if (type == null)
             {
                 throw new ArgumentNullException();
             }
 
-            _value = new byte[12 + data.Length];
+            // TODO: chunk type length check
 
+            if (data == null)
+            {
+                _value = new byte[12];
+                UpdateCrc();
+                return;
+            }
+
+            _value = new byte[12 + data.Length];
             BinaryPrimitives.WriteInt32BigEndian(WritableLengthPart, data.Length);
             type.CopyTo(WritableTypePart);
             data.CopyTo(WritableDataPart);
@@ -50,9 +58,18 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         public Chunk(string type, string data)
         {
-            if (type == null || data == null)
+            if (type == null)
             {
                 throw new ArgumentNullException();
+            }
+
+            // TODO: chunk type length check
+
+            if (data == null)
+            {
+                _value = new byte[12];
+                UpdateCrc();
+                return;
             }
 
             var typeByte = Encoding.UTF8.GetBytes(type);
