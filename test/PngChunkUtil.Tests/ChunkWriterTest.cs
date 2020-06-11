@@ -20,10 +20,10 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         [TestMethod]
         public void WriteImage_Test()
         {
-            var validChunks = ChunkReader.GetChunks(ValidImage).ToArray();
+            var validChunks = ChunkReader.SplitChunks(ValidImage).ToArray();
 
             var writedImage = ChunkWriter.WriteImage(validChunks);
-            var writedChunks = ChunkReader.GetChunks(writedImage).ToArray();
+            var writedChunks = ChunkReader.SplitChunks(writedImage).ToArray();
 
             for (int i = 0; i < validChunks.Length; i++)
             {
@@ -47,7 +47,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         [TestMethod]
         public void AddChunks_Test()
         {
-            var chunks = ChunkReader.GetChunks(ValidImage);
+            var chunks = ChunkReader.SplitChunks(ValidImage);
             var appendChunks = new Chunk[]
             {
                 new Chunk("TEST", "Test01"),
@@ -57,7 +57,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
             };
 
             var appendedImage = ChunkWriter.AddChunk(ValidImage, appendChunks);
-            var appendedChunks = ChunkReader.GetChunks(appendedImage);
+            var appendedChunks = ChunkReader.SplitChunks(appendedImage);
 
             Assert.AreEqual(chunks.Count + appendChunks.Length, appendedChunks.Count);
 
@@ -72,9 +72,9 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         [TestMethod]
         public void RemoveChunks_Test()
         {
-            var chunks = ChunkReader.GetChunks(ValidImage);
+            var chunks = ChunkReader.SplitChunks(ValidImage);
             var removedImage = ChunkWriter.RemoveChunk(ValidImage, "vrCd", "vrCw", "vrCp", "vrCu");
-            var removedChunks = ChunkReader.GetChunks(removedImage);
+            var removedChunks = ChunkReader.SplitChunks(removedImage);
 
             Assert.IsFalse(removedChunks.Any(c => c.TypeString == "vrCp" || c.TypeString == "vrCw" || c.TypeString == "vrCp" || c.TypeString == "vrCu"));
         }

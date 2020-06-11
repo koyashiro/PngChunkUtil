@@ -2,6 +2,7 @@ using System;
 using System.Buffers.Binary;
 using System.Text;
 using Force.Crc32;
+using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
@@ -22,12 +23,12 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (chunk == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(chunk));
             }
 
             if (!IsValid(chunk))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.Chunk_Common_ArgumentException);
             }
 
             _value = chunk.ToArray();
@@ -37,7 +38,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
             }
 
             // TODO: chunk type length check
@@ -56,11 +57,11 @@ namespace KoyashiroKohaku.PngChunkUtil
             UpdateCrc();
         }
 
-        public Chunk(string type, string data)
+        public Chunk(string type, string? data)
         {
             if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
             }
 
             // TODO: chunk type length check
@@ -106,12 +107,16 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (chunk == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(chunk));
+            }
+
+            if (chunk.Length < 4)
+            {
+                return false;
             }
 
             var dataLength = BinaryPrimitives.ReadInt32BigEndian(chunk.Slice(0, 4));
 
-            // バイト長をチェック
             if (chunk.Length != 12 + dataLength)
             {
                 return false;
@@ -135,7 +140,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
             }
 
             if (type.Length != 4)
@@ -150,7 +155,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
             }
 
             SetType(Encoding.UTF8.GetBytes(type));
@@ -160,7 +165,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (data == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (data.Length == DataPart.Length)
@@ -185,7 +190,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
             }
 
             SetType(Encoding.UTF8.GetBytes(type));
@@ -193,9 +198,14 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         private static uint CalculateCrc(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)
         {
-            if (type == null || data == null)
+            if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
             }
 
             var source = new byte[type.Length + data.Length];
@@ -207,9 +217,14 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         private uint CalculateCrc(string type, string data)
         {
-            if (type == null || data == null)
+            if (type == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
             }
 
             var typeByte = Encoding.UTF8.GetBytes(type).AsSpan();
