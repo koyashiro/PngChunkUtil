@@ -22,7 +22,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             var validChunks = ChunkReader.SplitChunks(ValidImage).ToArray();
 
-            var writedImage = ChunkWriter.WriteImage(validChunks);
+            var writedImage = ChunkWriter.WriteImageBytes(validChunks);
             var writedChunks = ChunkReader.SplitChunks(writedImage).ToArray();
 
             for (int i = 0; i < validChunks.Length; i++)
