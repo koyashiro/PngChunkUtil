@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
@@ -31,7 +32,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (!PngUtil.IsPng(image))
             {
-                throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidImage, nameof(image));
             }
 
             // 先頭のシグネチャを除く
@@ -43,7 +44,7 @@ namespace KoyashiroKohaku.PngChunkUtil
             {
                 if (index + 8 > image.Length)
                 {
-                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                    throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
                 }
 
                 // [4 byte] : Length of ChunkData
@@ -51,7 +52,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
                 if (index + 12 + length > image.Length)
                 {
-                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                    throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
                 }
 
                 // [4 byte] : ChunkType
@@ -70,7 +71,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
                 if (index + 8 + length + 4 > image.Length)
                 {
-                    throw new ArgumentException($"argument error. argument: '{nameof(image)}' is broken or no png image binary.");
+                    throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
                 }
 
                 // [(length) byte] : CRC (not used)
@@ -176,16 +177,11 @@ namespace KoyashiroKohaku.PngChunkUtil
             return true;
         }
 
-        public static bool IsTargetChunk(ReadOnlySpan<byte> chunkType, ChunkTypeFilter chunkTypeFilter)
+        private static bool IsTargetChunk(ReadOnlySpan<byte> chunkType, ChunkTypeFilter chunkTypeFilter)
         {
-            if (chunkType == null)
-            {
-                throw new ArgumentNullException(nameof(chunkType));
-            }
-
             if (chunkType.Length != 4)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange, nameof(chunkType));
             }
 
             if (!Enum.IsDefined(typeof(ChunkTypeFilter), chunkTypeFilter))

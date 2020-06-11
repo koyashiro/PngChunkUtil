@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
     public static class ChunkWriter
     {
-        public static byte[] WriteImage(IEnumerable<Chunk> chunks)
+        public static byte[] WriteImageBytes(IEnumerable<Chunk> chunks)
         {
             if (chunks == null)
             {
@@ -16,7 +17,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (chunks.Any(c => c == null))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ChunkWriter_WriteImageBytes_ChunkIsNull, nameof(chunks));
             }
 
             using var memoryStream = new MemoryStream();
@@ -40,11 +41,6 @@ namespace KoyashiroKohaku.PngChunkUtil
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (!PngUtil.IsPng(image))
-            {
-                throw new ArgumentException();
-            }
-
             if (appendChunks == null)
             {
                 throw new ArgumentNullException(nameof(appendChunks));
@@ -52,7 +48,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (appendChunks.Any(c => c == null))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ChunkWriter_WriteImageBytes_ChunkIsNull, nameof(appendChunks));
             }
 
             return AddChunk(image, appendChunks);
@@ -65,11 +61,6 @@ namespace KoyashiroKohaku.PngChunkUtil
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (!PngUtil.IsPng(image))
-            {
-                throw new ArgumentException();
-            }
-
             if (appendChunks == null)
             {
                 throw new ArgumentNullException(nameof(appendChunks));
@@ -77,7 +68,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (appendChunks.Any(c => c == null))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ChunkWriter_WriteImageBytes_ChunkIsNull, nameof(appendChunks));
             }
 
             var chunks = ChunkReader.SplitChunks(image);
@@ -104,11 +95,6 @@ namespace KoyashiroKohaku.PngChunkUtil
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (!PngUtil.IsPng(image))
-            {
-                throw new ArgumentException();
-            }
-
             if (chunkTypes == null)
             {
                 throw new ArgumentNullException(nameof(chunkTypes));
@@ -116,7 +102,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (chunkTypes.Any(c => string.IsNullOrEmpty(c)))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange, nameof(chunkTypes));
             }
 
             var chunks = ChunkReader.SplitChunks(image).Where(c => !chunkTypes.Any(ct => ct == c.TypeString)).ToArray();
