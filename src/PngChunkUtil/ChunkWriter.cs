@@ -1,9 +1,9 @@
+using KoyashiroKohaku.PngChunkUtil.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {

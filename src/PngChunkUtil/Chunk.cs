@@ -1,8 +1,8 @@
+using Force.Crc32;
+using KoyashiroKohaku.PngChunkUtil.Properties;
 using System;
 using System.Buffers.Binary;
 using System.Text;
-using Force.Crc32;
-using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
