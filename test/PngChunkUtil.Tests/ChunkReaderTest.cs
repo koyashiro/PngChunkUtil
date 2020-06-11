@@ -29,50 +29,35 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        public void IsPng_ArgumentNullExceptionTest()
-        {
-            try
-            {
-                ChunkReader.IsPng(null);
-            }
-            catch (ArgumentNullException)
-            {
-                return;
-            }
-
-            Assert.Fail();
-        }
-
-        [TestMethod]
         public void IsPng_FalseTest()
         {
-            Assert.IsFalse(ChunkReader.IsPng(InvalidSource));
+            Assert.IsFalse(PngUtil.IsPng(InvalidSource));
         }
 
         [TestMethod]
         public void IsPng_TrueTest()
         {
-            Assert.IsTrue(ChunkReader.IsPng(ValidSource));
+            Assert.IsTrue(PngUtil.IsPng(ValidSource));
         }
 
         [TestMethod]
         public void IsPngSpan_FalseTest()
         {
-            Assert.IsFalse(ChunkReader.IsPng(InvalidSource.AsSpan()));
+            Assert.IsFalse(PngUtil.IsPng(InvalidSource.AsSpan()));
         }
 
         [TestMethod]
         public void IsPngSpan_TrueTest()
         {
-            Assert.IsTrue(ChunkReader.IsPng(ValidSource.AsSpan()));
+            Assert.IsTrue(PngUtil.IsPng(ValidSource.AsSpan()));
         }
 
         [TestMethod]
-        public void GetChunks_ArgumentNullExceptionTest()
+        public void SplitChunks_ArgumentNullExceptionTest()
         {
             try
             {
-                ChunkReader.GetChunks(null);
+                ChunkReader.SplitChunks(null);
             }
             catch (ArgumentNullException)
             {
@@ -83,11 +68,11 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        public void GetChunks_ArgumentExceptionTest()
+        public void SplitChunks_ArgumentExceptionTest()
         {
             try
             {
-                ChunkReader.GetChunks(InvalidSource);
+                ChunkReader.SplitChunks(InvalidSource);
             }
             catch (ArgumentException)
             {
@@ -98,9 +83,9 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        public void GetChunks_AllChunksTest()
+        public void SplitChunks_AllChunksTest()
         {
-            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.All).ToList();
+            var chunks = ChunkReader.SplitChunks(ValidSource, ChunkTypeFilter.All).ToList();
 
             if (chunks.Count != 291)
             {
@@ -190,9 +175,9 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        public void GetChunks_CriticalChunkOnlyTest()
+        public void SplitChunks_CriticalChunkOnlyTest()
         {
-            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.CriticalChunkOnly).ToList();
+            var chunks = ChunkReader.SplitChunks(ValidSource, ChunkTypeFilter.CriticalChunkOnly).ToList();
 
             var difference = chunks.Select(c => c.TypeString).Except(CriticalChunks);
 
@@ -200,9 +185,9 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        public void GetChunks_AncillaryChunkOnlyTest()
+        public void SplitChunks_AncillaryChunkOnlyTest()
         {
-            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.AncillaryChunkOnly).ToList();
+            var chunks = ChunkReader.SplitChunks(ValidSource, ChunkTypeFilter.AncillaryChunkOnly).ToList();
 
             var difference = chunks.Select(c => c.TypeString).Except(AncillaryChunks);
 
@@ -210,9 +195,9 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        public void GetChunks_AdditionalChunkOnlyTest()
+        public void SplitChunks_AdditionalChunkOnlyTest()
         {
-            var chunks = ChunkReader.GetChunks(ValidSource, ChunkTypeFilter.AdditionalChunkOnly).ToList();
+            var chunks = ChunkReader.SplitChunks(ValidSource, ChunkTypeFilter.AdditionalChunkOnly).ToList();
 
             var difference = chunks.Select(c => c.TypeString).Intersect(CriticalChunks.Union(AncillaryChunks));
 
