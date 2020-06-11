@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
@@ -30,6 +28,5 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             return source.Slice(0, 8).SequenceEqual(Signature);
         }
-
     }
 }

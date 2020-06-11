@@ -30,7 +30,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void Constructor_WithNoArgmentTest()
         {
             var chunk = new Chunk();
-           
+
             Assert.IsTrue(chunk.TypePart.SequenceEqual(new byte[4]));
             Assert.IsTrue(chunk.DataPart.SequenceEqual(Enumerable.Empty<byte>().ToArray()));
         }

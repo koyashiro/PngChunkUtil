@@ -117,7 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Chunk_Common_ArgumentException" xml:space="preserve">
-    <value />
+  <data name="ChunkReader_SplitChunk_InvalidChunk" xml:space="preserve">
+    <value>Chunk is broken.</value>
+  </data>
+  <data name="ChunkReader_SplitChunk_InvalidImage" xml:space="preserve">
+    <value>Image is broken.</value>
+  </data>
+  <data name="ChunkWriter_WriteImageBytes_ChunkIsNull" xml:space="preserve">
+    <value>Chunk is null.</value>
+  </data>
+  <data name="Chunk_Constructor_ChunkTypeOutOfRange" xml:space="preserve">
+    <value>Chunk type should be 4 byte.</value>
+  </data>
+  <data name="Chunk_Constructor_Invalid" xml:space="preserve">
+    <value>Chunk is broken.</value>
   </data>
 </root>

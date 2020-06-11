@@ -61,11 +61,47 @@ namespace KoyashiroKohaku.PngChunkUtil.Properties {
         }
         
         /// <summary>
-        ///    に類似しているローカライズされた文字列を検索します。
+        ///   Chunk type should be 4 byte. に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        public static string Chunk_Common_ArgumentException {
+        public static string Chunk_Constructor_ChunkTypeOutOfRange {
             get {
-                return ResourceManager.GetString("Chunk_Common_ArgumentException", resourceCulture);
+                return ResourceManager.GetString("Chunk_Constructor_ChunkTypeOutOfRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Chunk is broken. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Chunk_Constructor_Invalid {
+            get {
+                return ResourceManager.GetString("Chunk_Constructor_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Chunk is broken. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ChunkReader_SplitChunk_InvalidChunk {
+            get {
+                return ResourceManager.GetString("ChunkReader_SplitChunk_InvalidChunk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Image is broken. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ChunkReader_SplitChunk_InvalidImage {
+            get {
+                return ResourceManager.GetString("ChunkReader_SplitChunk_InvalidImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Chunk is null. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ChunkWriter_WriteImageBytes_ChunkIsNull {
+            get {
+                return ResourceManager.GetString("ChunkWriter_WriteImageBytes_ChunkIsNull", resourceCulture);
             }
         }
     }

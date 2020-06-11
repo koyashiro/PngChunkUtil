@@ -1,13 +1,20 @@
+using KoyashiroKohaku.PngChunkUtil.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
     public static class ChunkWriter
     {
-        public static byte[] WriteImage(IEnumerable<Chunk> chunks)
+        /// <summary>
+        /// チャンクからPNG画像のbyte配列を生成します。
+        /// </summary>
+        /// <param name="chunks"></param>
+        /// <returns></returns>
+        public static byte[] WriteImageBytes(IEnumerable<Chunk> chunks)
         {
             if (chunks == null)
             {
@@ -16,7 +23,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (chunks.Any(c => c == null))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ChunkWriter_WriteImageBytes_ChunkIsNull, nameof(chunks));
             }
 
             using var memoryStream = new MemoryStream();
@@ -33,106 +40,11 @@ namespace KoyashiroKohaku.PngChunkUtil
             return memoryStream.ToArray();
         }
 
-        public static byte[] AddChunk(ReadOnlySpan<byte> image, params Chunk[] appendChunks)
-        {
-            if (image == null)
-            {
-                throw new ArgumentNullException(nameof(image));
-            }
-
-            if (!PngUtil.IsPng(image))
-            {
-                throw new ArgumentException();
-            }
-
-            if (appendChunks == null)
-            {
-                throw new ArgumentNullException(nameof(appendChunks));
-            }
-
-            if (appendChunks.Any(c => c == null))
-            {
-                throw new ArgumentException();
-            }
-
-            return AddChunk(image, appendChunks);
-        }
-
-        public static byte[] AddChunk(ReadOnlySpan<byte> image, IList<Chunk> appendChunks)
-        {
-            if (image == null)
-            {
-                throw new ArgumentNullException(nameof(image));
-            }
-
-            if (!PngUtil.IsPng(image))
-            {
-                throw new ArgumentException();
-            }
-
-            if (appendChunks == null)
-            {
-                throw new ArgumentNullException(nameof(appendChunks));
-            }
-
-            if (appendChunks.Any(c => c == null))
-            {
-                throw new ArgumentException();
-            }
-
-            var chunks = ChunkReader.SplitChunks(image);
-            chunks.InsertRange(chunks.Count - 1, appendChunks);
-
-            using var memoryStream = new MemoryStream();
-            using var binaryWriter = new BinaryWriter(memoryStream);
-
-            // [4 byte] : Signature
-            binaryWriter.Write(PngUtil.Signature);
-
-            foreach (var chunk in chunks)
-            {
-                binaryWriter.Write(chunk.Value);
-            }
-
-            return memoryStream.ToArray();
-        }
-
-        public static byte[] RemoveChunk(ReadOnlySpan<byte> image, params string[] chunkTypes)
-        {
-            if (image == null)
-            {
-                throw new ArgumentNullException(nameof(image));
-            }
-
-            if (!PngUtil.IsPng(image))
-            {
-                throw new ArgumentException();
-            }
-
-            if (chunkTypes == null)
-            {
-                throw new ArgumentNullException(nameof(chunkTypes));
-            }
-
-            if (chunkTypes.Any(c => string.IsNullOrEmpty(c)))
-            {
-                throw new ArgumentException();
-            }
-
-            var chunks = ChunkReader.SplitChunks(image).Where(c => !chunkTypes.Any(ct => ct == c.TypeString)).ToArray();
-
-            using var memoryStream = new MemoryStream();
-            using var binaryWriter = new BinaryWriter(memoryStream);
-
-            // [4 byte] : Signature
-            binaryWriter.Write(PngUtil.Signature);
-
-            foreach (var chunk in chunks)
-            {
-                binaryWriter.Write(chunk.Value);
-            }
-
-            return memoryStream.ToArray();
-        }
+        /// <summary>
+        /// チャンクからPNG画像のbyte配列を生成します。
+        /// </summary>
+        /// <param name="chunks"></param>
+        /// <returns></returns>
+        public static Task<byte[]> WriteImageAllBytesAsync(IEnumerable<Chunk> chunks) => Task.Run(() => WriteImageBytes(chunks));
     }
 }

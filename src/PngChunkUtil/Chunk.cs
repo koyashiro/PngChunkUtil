@@ -1,8 +1,8 @@
+using Force.Crc32;
+using KoyashiroKohaku.PngChunkUtil.Properties;
 using System;
 using System.Buffers.Binary;
 using System.Text;
-using Force.Crc32;
-using KoyashiroKohaku.PngChunkUtil.Properties;
 
 namespace KoyashiroKohaku.PngChunkUtil
 {
@@ -28,7 +28,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (!IsValid(chunk))
             {
-                throw new ArgumentException(Resources.Chunk_Common_ArgumentException);
+                throw new ArgumentException(Resources.Chunk_Constructor_Invalid);
             }
 
             _value = chunk.ToArray();
@@ -41,7 +41,10 @@ namespace KoyashiroKohaku.PngChunkUtil
                 throw new ArgumentNullException(nameof(type));
             }
 
-            // TODO: chunk type length check
+            if (type.Length != 4)
+            {
+                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange);
+            }
 
             if (data == null)
             {
@@ -64,7 +67,10 @@ namespace KoyashiroKohaku.PngChunkUtil
                 throw new ArgumentNullException(nameof(type));
             }
 
-            // TODO: chunk type length check
+            if (type.Length != 4)
+            {
+                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange);
+            }
 
             if (data == null)
             {
@@ -74,7 +80,7 @@ namespace KoyashiroKohaku.PngChunkUtil
             }
 
             var typeByte = Encoding.UTF8.GetBytes(type);
-            var dataByte = Encoding.UTF8.GetBytes(data);
+            var dataByte = string.IsNullOrEmpty(data) ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(data);
 
             _value = new byte[12 + dataByte.Length];
 
@@ -107,7 +113,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (chunk == null)
             {
-                throw new ArgumentNullException(nameof(chunk));
+                return false;
             }
 
             if (chunk.Length < 4)
@@ -145,7 +151,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (type.Length != 4)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange);
             }
 
             type.CopyTo(WritableTypePart);
@@ -165,7 +171,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         {
             if (data == null)
             {
-                throw new ArgumentNullException(nameof(data));
+                data = Array.Empty<byte>();
             }
 
             if (data.Length == DataPart.Length)
@@ -188,26 +194,11 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         public void SetData(string type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
             SetType(Encoding.UTF8.GetBytes(type));
         }
 
         private static uint CalculateCrc(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
             var source = new byte[type.Length + data.Length];
             type.CopyTo(source.AsSpan().Slice(0, 4));
             data.CopyTo(source.AsSpan().Slice(4, data.Length));
@@ -215,26 +206,14 @@ namespace KoyashiroKohaku.PngChunkUtil
             return Crc32Algorithm.Compute(source);
         }
 
-        private uint CalculateCrc(string type, string data)
+        private uint CalculateCrc(string type, string? data)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
             if (data == null)
             {
-                throw new ArgumentNullException(nameof(data));
+                data = string.Empty;
             }
 
-            var typeByte = Encoding.UTF8.GetBytes(type).AsSpan();
-            var dataByte = Encoding.UTF8.GetBytes(data).AsSpan();
-
-            var source = new byte[type.Length + dataByte.Length];
-            typeByte.CopyTo(source.AsSpan().Slice(0, 4));
-            dataByte.CopyTo(source.AsSpan().Slice(4, dataByte.Length));
-
-            return Crc32Algorithm.Compute(source);
+            return CalculateCrc(Encoding.UTF8.GetBytes(type), Encoding.UTF8.GetBytes(data));
         }
 
         private void UpdateCrc() => BinaryPrimitives.WriteUInt32BigEndian(WritableCrcPart, CalculateCrc(TypePart, DataPart));
