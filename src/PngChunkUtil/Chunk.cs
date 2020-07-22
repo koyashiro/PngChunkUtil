@@ -135,7 +135,7 @@ namespace KoyashiroKohaku.PngChunkUtil
                 return false;
             }
 
-            if (CalculateCrc(chunk[4..^4]) != BinaryPrimitives.ReadInt32BigEndian(chunk[^4..]))
+            if (CalculateCrc(chunk[4..^4]) != BinaryPrimitives.ReadUInt32BigEndian(chunk[^4..]))
             {
                 return false;
             }
