@@ -1,5 +1,4 @@
 using Force.Crc32;
-using KoyashiroKohaku.PngChunkUtil.Properties;
 using System;
 using System.Buffers.Binary;
 using System.Text;
@@ -9,132 +8,134 @@ namespace KoyashiroKohaku.PngChunkUtil
     /// <summary>
     /// Chunk
     /// </summary>
-    public class Chunk
+    public struct Chunk : IEquatable<Chunk>
     {
-        private byte[] _value;
+        private readonly byte[] _buffer;
+        private readonly Range _range;
 
-        public Chunk()
+        public Chunk(byte[] chunk)
         {
-            _value = new byte[12];
-            UpdateCrc();
-        }
-
-        public Chunk(ReadOnlySpan<byte> chunk)
-        {
-            if (chunk == null)
+            if (chunk is null)
             {
                 throw new ArgumentNullException(nameof(chunk));
             }
 
-            if (!IsValid(chunk))
+            if (!InternalIsValid(chunk))
             {
-                throw new ArgumentException(Resources.Chunk_Constructor_Invalid);
+                throw new ArgumentException();
             }
 
-            _value = chunk.ToArray();
+            _buffer = chunk;
+            _range = ..;
         }
 
-        public Chunk(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)
+        internal Chunk(byte[] source, Range range)
         {
-            if (type == null)
+            if (source is null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(source));
             }
 
-            if (type.Length != 4)
+            if (range.End.Value - range.Start.Value < 12)
             {
-                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange);
+                throw new ArgumentException();
             }
 
-            if (data == null)
+            if (!IsValid(source[range]))
             {
-                _value = new byte[12];
-                UpdateCrc();
-                return;
+                throw new ArgumentException();
             }
 
-            _value = new byte[12 + data.Length];
-            BinaryPrimitives.WriteInt32BigEndian(WritableLengthPart, data.Length);
-            type.CopyTo(WritableTypePart);
-            data.CopyTo(WritableDataPart);
-            UpdateCrc();
+            _buffer = source;
+            _range = range;
         }
 
-        public Chunk(string type, string? data)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (type.Length != 4)
-            {
-                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange);
-            }
-
-            if (data == null)
-            {
-                _value = new byte[12];
-                UpdateCrc();
-                return;
-            }
-
-            var typeByte = Encoding.UTF8.GetBytes(type);
-            var dataByte = string.IsNullOrEmpty(data) ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(data);
-
-            _value = new byte[12 + dataByte.Length];
-
-            BinaryPrimitives.WriteInt32BigEndian(WritableLengthPart, dataByte.Length);
-            typeByte.CopyTo(WritableTypePart);
-            dataByte.CopyTo(WritableDataPart);
-            BinaryPrimitives.WriteUInt32BigEndian(WritableCrcPart, CalculateCrc(type, data));
-        }
-
-        public Span<byte> WritableValue => _value.AsSpan();
-
-        private Span<byte> WritableLengthPart => _value.AsSpan().Slice(0, 4);
-        private Span<byte> WritableTypePart => _value.AsSpan().Slice(4, 4);
-        private Span<byte> WritableDataPart => _value.AsSpan().Slice(8, LengthPartInt);
-        private Span<byte> WritableCrcPart => _value.AsSpan().Slice(8 + LengthPartInt, 4);
-
-        public ReadOnlySpan<byte> Value => WritableValue;
-
-        public ReadOnlySpan<byte> LengthPart => WritableLengthPart;
-        public ReadOnlySpan<byte> TypePart => WritableTypePart;
-        public ReadOnlySpan<byte> DataPart => WritableDataPart;
-        public ReadOnlySpan<byte> CrcPart => WritableCrcPart;
+        public ReadOnlySpan<byte> Value => _buffer.AsSpan(_range);
+        public ReadOnlySpan<byte> LengthPart => Value[..4];
+        public ReadOnlySpan<byte> TypePart => Value[4..8];
+        public ReadOnlySpan<byte> DataPart => Value[8..^4];
+        public ReadOnlySpan<byte> CrcPart => Value[^4..];
 
         public string TypeString => Encoding.UTF8.GetString(TypePart);
-        public int LengthPartInt => BinaryPrimitives.ReadInt32BigEndian(LengthPart);
+        public int DataLength => BinaryPrimitives.ReadInt32BigEndian(LengthPart);
         public string DataString => Encoding.UTF8.GetString(DataPart);
-        public int CrcPartUInt => BinaryPrimitives.ReadInt32BigEndian(CrcPart);
+        public uint Crc => BinaryPrimitives.ReadUInt32BigEndian(CrcPart);
 
-        public static bool IsValid(ReadOnlySpan<byte> chunk)
+        public static bool TryCreate(byte[] source, out Chunk chunk)
         {
-            if (chunk == null)
+            if (source is null)
+            {
+                chunk = default;
+                return false;
+            }
+
+            if (!InternalIsValid(source))
+            {
+                chunk = default;
+                return false;
+            }
+
+            chunk = new Chunk(source);
+            return true;
+        }
+
+        public static bool TryCreate(byte[] source, Range range, out Chunk chunk)
+        {
+            if (source is null)
+            {
+                chunk = default;
+                return false;
+            }
+
+            if (range.End.Value - range.Start.Value < 12)
+            {
+                chunk = default;
+                return false;
+            }
+
+            if (!InternalIsValid(source.AsSpan(range)))
+            {
+                chunk = default;
+                return false;
+            }
+
+            chunk = new Chunk(source, range);
+            return true;
+        }
+
+        private static bool IsValid(byte[] chunk)
+        {
+            if (chunk is null)
             {
                 return false;
             }
 
+            return InternalIsValid(chunk);
+        }
+
+        private static bool IsValid(ReadOnlySpan<byte> chunk)
+        {
+            return InternalIsValid(chunk);
+        }
+
+        public bool IsValid()
+        {
+            return this != default;
+        }
+
+        internal static bool InternalIsValid(ReadOnlySpan<byte> chunk)
+        {
             if (chunk.Length < 4)
             {
                 return false;
             }
 
-            var dataLength = BinaryPrimitives.ReadInt32BigEndian(chunk.Slice(0, 4));
-
-            if (chunk.Length != 12 + dataLength)
+            if (chunk.Length != 12 + BinaryPrimitives.ReadInt32BigEndian(chunk[0..4]))
             {
                 return false;
             }
 
-            var type = chunk.Slice(4, 8);
-            var data = chunk.Slice(8, dataLength);
-
-            var crc = CalculateCrc(type, data);
-
-            // CRCをチェック
-            if (crc != BinaryPrimitives.ReadInt32BigEndian(chunk.Slice(8 + dataLength, 4)))
+            if (CalculateCrc(chunk[4..^4]) != BinaryPrimitives.ReadUInt32BigEndian(chunk[^4..]))
             {
                 return false;
             }
@@ -142,85 +143,78 @@ namespace KoyashiroKohaku.PngChunkUtil
             return true;
         }
 
-        public void SetType(ReadOnlySpan<byte> type)
+        private static uint CalculateCrc(ReadOnlySpan<byte> typeDataChunk)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
+            Span<byte> source = typeDataChunk.Length <= 128 ? stackalloc byte[typeDataChunk.Length] : new byte[typeDataChunk.Length];
 
-            if (type.Length != 4)
-            {
-                throw new ArgumentException(Resources.Chunk_Constructor_ChunkTypeOutOfRange);
-            }
+            typeDataChunk.CopyTo(source);
 
-            type.CopyTo(WritableTypePart);
+            return Crc32Algorithm.Compute(source.ToArray());
         }
 
-        public void SetType(string type)
+        public static bool IsCriticalChunk(ReadOnlySpan<byte> chunkType)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            SetType(Encoding.UTF8.GetBytes(type));
+            return chunkType.SequenceEqual(CriticalChunk.IHDR)
+                || chunkType.SequenceEqual(CriticalChunk.PLTE)
+                || chunkType.SequenceEqual(CriticalChunk.IDAT)
+                || chunkType.SequenceEqual(CriticalChunk.IEND);
         }
 
-        public void SetData(ReadOnlySpan<byte> data)
+        public static bool IsAncillaryChunk(ReadOnlySpan<byte> chunkType)
         {
-            if (data == null)
-            {
-                data = Array.Empty<byte>();
-            }
-
-            if (data.Length == DataPart.Length)
-            {
-                data.CopyTo(WritableTypePart);
-                UpdateCrc();
-            }
-            else
-            {
-                ReadOnlySpan<byte> type = TypePart;
-
-                _value = new byte[12 + data.Length];
-
-                BinaryPrimitives.WriteInt32BigEndian(WritableLengthPart, data.Length);
-                type.CopyTo(WritableTypePart);
-                data.CopyTo(WritableDataPart);
-                UpdateCrc();
-            }
+            return chunkType.SequenceEqual(AncillaryChunk.CHRM)
+                || chunkType.SequenceEqual(AncillaryChunk.GAMA)
+                || chunkType.SequenceEqual(AncillaryChunk.ICCP)
+                || chunkType.SequenceEqual(AncillaryChunk.SBIT)
+                || chunkType.SequenceEqual(AncillaryChunk.SRGB)
+                || chunkType.SequenceEqual(AncillaryChunk.BKGD)
+                || chunkType.SequenceEqual(AncillaryChunk.HIST)
+                || chunkType.SequenceEqual(AncillaryChunk.TRNS)
+                || chunkType.SequenceEqual(AncillaryChunk.PHYS)
+                || chunkType.SequenceEqual(AncillaryChunk.TIME)
+                || chunkType.SequenceEqual(AncillaryChunk.ITXT)
+                || chunkType.SequenceEqual(AncillaryChunk.TEXT)
+                || chunkType.SequenceEqual(AncillaryChunk.ZTXT);
         }
 
-        public void SetData(string type)
+        public static bool IsAdditionalChunk(ReadOnlySpan<byte> chunkType)
         {
-            SetType(Encoding.UTF8.GetBytes(type));
+            return !IsCriticalChunk(chunkType) && !IsAncillaryChunk(chunkType);
         }
-
-        private static uint CalculateCrc(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)
-        {
-            var source = new byte[type.Length + data.Length];
-            type.CopyTo(source.AsSpan().Slice(0, 4));
-            data.CopyTo(source.AsSpan().Slice(4, data.Length));
-
-            return Crc32Algorithm.Compute(source);
-        }
-
-        private uint CalculateCrc(string type, string? data)
-        {
-            if (data == null)
-            {
-                data = string.Empty;
-            }
-
-            return CalculateCrc(Encoding.UTF8.GetBytes(type), Encoding.UTF8.GetBytes(data));
-        }
-
-        private void UpdateCrc() => BinaryPrimitives.WriteUInt32BigEndian(WritableCrcPart, CalculateCrc(TypePart, DataPart));
 
         public override string ToString()
         {
             return $"{TypeString}: {DataString}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Chunk other)
+            {
+                return Equals(other);
+            }
+
+            return false;
+        }
+
+        public bool Equals(Chunk other)
+        {
+            return Value.SequenceEqual(other.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_buffer, _range);
+        }
+
+        public static bool operator ==(Chunk left, Chunk right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Chunk left, Chunk right)
+        {
+            return !(left == right);
         }
     }
 }

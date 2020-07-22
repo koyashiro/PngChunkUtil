@@ -1,76 +1,146 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using KoyashiroKohaku.PngChunkUtil;
 using System;
-using System.Linq;
-using System.IO;
+using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Text;
 
 namespace KoyashiroKohaku.PngChunkUtil.Tests
 {
     [TestClass]
     public class ChunkTest
     {
-        internal static byte[] SingleByteChunkDataByteArray => new byte[]
+        private static IEnumerable<object[]> InvalidChunkValues => new object[][]
         {
-            0x54, 0x65, 0x73, 0x74, 0x20, 0x44, 0x61, 0x74, 0x61
+            new object[] { Array.Empty<byte>() },
+            new object[] { new byte[1] },
+            new object[] { new byte[2] },
+            new object[] { new byte[3] },
+            new object[] { new byte[4] }
         };
-        internal static string SingleByteChunkDataString => "Test Data";
-        internal static byte[] MultiByteChunkDataByteArray => new byte[]
+        private static IEnumerable<object[]> ValidChunkValues => new object[][]
         {
-            0xE3, 0x81, 0xA6, 0xE3, 0x81, 0x99, 0xE3, 0x81, 0xA8,
-            0xE3, 0x81, 0xA7, 0xE3, 0x83, 0xBC, 0xE3, 0x81, 0x9F
+            new object[]
+            {
+                new byte[12]
+                {
+                    0x00, 0x00, 0x00, 0x00,
+                    (byte)'I', (byte)'H', (byte)'D', (byte)'R',
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            },
+            new object[]
+            {
+                new byte[12]
+                {
+                    0x00, 0x00, 0x00, 0x00,
+                    (byte)'I', (byte)'E', (byte)'N', (byte)'D',
+                    0xae, 0x42, 0x60, 0x82
+                }
+            }
         };
-        internal static string MultiByteChunkDataString => "てすとでーた";
-        internal static byte[] IhdrChunkTypeByteArray => new byte[] { 0x49, 0x48, 0x44, 0x52 };
-        internal static string IhdrChunkTypeString => "IHDR";
-        internal static byte[] IdatChunkTypeByteArray => new byte[] { 0x49, 0x44, 0x41, 0x54 };
-        internal static string IdatChunkTypeString => "IDAT";
 
         [TestMethod]
-        public void Constructor_WithNoArgmentTest()
+        [TestCategory("Ctor")]
+        public void Ctor_InputIsNull_ThrowArgumentNullException()
         {
-            var chunk = new Chunk();
-
-            Assert.IsTrue(chunk.TypePart.SequenceEqual(new byte[4]));
-            Assert.IsTrue(chunk.DataPart.SequenceEqual(Enumerable.Empty<byte>().ToArray()));
+            Assert.ThrowsException<ArgumentNullException>(() => new Chunk(null));
         }
 
         [TestMethod]
-        public void Constructor_WithByteSpanTest()
+        [DynamicData(nameof(InvalidChunkValues))]
+        [TestCategory("Ctor")]
+        public void Ctor_InputIsInvalid_ThrowArgumentException(byte[] buffer)
         {
-            var singleByteChunk = new Chunk(IdatChunkTypeByteArray, SingleByteChunkDataByteArray);
-            var multiByteChunk = new Chunk(IdatChunkTypeByteArray, MultiByteChunkDataByteArray);
-
-            Assert.IsTrue(singleByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
-            Assert.AreEqual(singleByteChunk.TypeString, IdatChunkTypeString);
-
-            Assert.IsTrue(singleByteChunk.DataPart.SequenceEqual(SingleByteChunkDataByteArray));
-            Assert.AreEqual(singleByteChunk.DataString, SingleByteChunkDataString);
-
-            Assert.IsTrue(multiByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
-            Assert.AreEqual(multiByteChunk.TypeString, IdatChunkTypeString);
-
-            Assert.IsTrue(multiByteChunk.DataPart.SequenceEqual(MultiByteChunkDataByteArray));
-            Assert.AreEqual(multiByteChunk.DataString, MultiByteChunkDataString);
+            Assert.ThrowsException<ArgumentException>(() => new Chunk(buffer));
         }
 
         [TestMethod]
-        public void Constructor_WithCharSpanTest()
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("Ctor")]
+        public void Ctor_InputIsValid_ReturnChunk(byte[] buffer)
         {
-            var singleByteChunk = new Chunk(IdatChunkTypeString, SingleByteChunkDataString);
-            var multiByteChunk = new Chunk(IdatChunkTypeString, MultiByteChunkDataString);
+            new Chunk(buffer);
+        }
 
-            Assert.IsTrue(singleByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
-            Assert.AreEqual(singleByteChunk.TypeString, IdatChunkTypeString);
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("Value")]
+        public void Value_ReturnChunkValue(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            CollectionAssert.AreEqual(buffer, chunk.Value.ToArray());
+        }
 
-            Assert.IsTrue(singleByteChunk.DataPart.SequenceEqual(SingleByteChunkDataByteArray));
-            Assert.AreEqual(singleByteChunk.DataString, SingleByteChunkDataString);
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("LengthPart")]
+        public void LengthPart_ReturnLengthPartValue(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            CollectionAssert.AreEqual(buffer[..4], chunk.LengthPart.ToArray());
+        }
 
-            Assert.IsTrue(multiByteChunk.TypePart.SequenceEqual(IdatChunkTypeByteArray));
-            Assert.AreEqual(multiByteChunk.TypeString, IdatChunkTypeString);
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("DataLength")]
+        public void DataLength_ReturnDataLength(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            Assert.AreEqual(BinaryPrimitives.ReadInt32BigEndian(buffer[..4]), chunk.DataLength);
+        }
 
-            Assert.IsTrue(multiByteChunk.DataPart.SequenceEqual(MultiByteChunkDataByteArray));
-            Assert.AreEqual(multiByteChunk.DataString, MultiByteChunkDataString);
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("TypePart")]
+        public void TypePart_ReturnTypePartValue(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            CollectionAssert.AreEqual(buffer[4..8], chunk.TypePart.ToArray());
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("TypeString")]
+        public void TypeString_ReturnTypeString(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            Assert.AreEqual(Encoding.UTF8.GetString(buffer[4..8]), chunk.TypeString);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("DataPart")]
+        public void DataPart_ReturnDataPartValue(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            CollectionAssert.AreEqual(buffer[8..^4], chunk.DataPart.ToArray());
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("DataString")]
+        public void DataString_ReturnTypeString(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            Assert.AreEqual(Encoding.UTF8.GetString(buffer[8..^4]), chunk.DataString);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("CrcPart")]
+        public void CrcPart_ReturnCrcPartValue(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            CollectionAssert.AreEqual(buffer[^4..], chunk.CrcPart.ToArray());
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkValues))]
+        [TestCategory("Crc")]
+        public void Crc_ReturnCrc(byte[] buffer)
+        {
+            var chunk = new Chunk(buffer);
+            Assert.AreEqual(BinaryPrimitives.ReadUInt32BigEndian(buffer[^4..]), chunk.Crc);
         }
     }
 }
