@@ -125,6 +125,11 @@ namespace KoyashiroKohaku.PngChunkUtil
                 throw new ArgumentNullException(nameof(chunks));
             }
 
+            if (!chunks.Any())
+            {
+                throw new ArgumentException(nameof(chunks));
+            }
+
             using var memoryStream = new MemoryStream();
             using var binaryWriter = new BinaryWriter(memoryStream);
 
