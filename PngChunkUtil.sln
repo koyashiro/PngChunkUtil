@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PngChunkUtil", "src\PngChunkUtil\PngChunkUtil.csproj", "{5387F6FF-2E07-450F-A3BF-04B69026561F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PngChunkUtil.Tests", "test\PngChunkUtil.Tests\PngChunkUtil.Tests.csproj", "{51A2CB99-E192-4E88-B7B6-48E94760D9FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PngChunkUtil.Test", "tests\PngChunkUtil.Test\PngChunkUtil.Test.csproj", "{51A2CB99-E192-4E88-B7B6-48E94760D9FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
