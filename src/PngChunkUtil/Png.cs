@@ -34,19 +34,18 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         private static IEnumerable<Chunk> InternalSplitIntoChunks(byte[] image)
         {
-            var buffer = image.AsSpan();
             var index = 8;
 
-            while (index < buffer.Length)
+            while (index < image.Length)
             {
-                if (index + 8 > buffer.Length)
+                if (index + 8 > image.Length)
                 {
                     throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
                 }
 
-                var length = BinaryPrimitives.ReadInt32BigEndian(buffer[index..(index + 4)]) + 12;
+                var length = BinaryPrimitives.ReadInt32BigEndian(image[index..(index + 4)]) + 12;
 
-                if (index + length > buffer.Length)
+                if (index + length > image.Length)
                 {
                     throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
                 }
