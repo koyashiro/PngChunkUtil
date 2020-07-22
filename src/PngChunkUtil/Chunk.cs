@@ -103,7 +103,7 @@ namespace KoyashiroKohaku.PngChunkUtil
             return true;
         }
 
-        public static bool IsValid(byte[] chunk)
+        private static bool IsValid(byte[] chunk)
         {
             if (chunk is null)
             {
@@ -113,7 +113,7 @@ namespace KoyashiroKohaku.PngChunkUtil
             return InternalIsValid(chunk);
         }
 
-        public static bool IsValid(ReadOnlySpan<byte> chunk)
+        private static bool IsValid(ReadOnlySpan<byte> chunk)
         {
             return InternalIsValid(chunk);
         }
