@@ -50,11 +50,11 @@ namespace KoyashiroKohaku.PngChunkUtil
             _range = range;
         }
 
-        public ReadOnlySpan<byte> Value => _buffer.AsSpan();
-        public ReadOnlySpan<byte> LengthPart => Value.Slice(_range.Start.Value, 4);
-        public ReadOnlySpan<byte> TypePart => Value.Slice(_range.Start.Value + 4, 4);
-        public ReadOnlySpan<byte> DataPart => Value.Slice(_range.Start.Value + 8, DataLength);
-        public ReadOnlySpan<byte> CrcPart => Value.Slice(_range.Start.Value + 8 + DataLength, 4);
+        public ReadOnlySpan<byte> Value => _buffer.AsSpan(_range);
+        public ReadOnlySpan<byte> LengthPart => Value[..4];
+        public ReadOnlySpan<byte> TypePart => Value[4..8];
+        public ReadOnlySpan<byte> DataPart => Value[8..^4];
+        public ReadOnlySpan<byte> CrcPart => Value[^4..];
 
         public string TypeString => Encoding.UTF8.GetString(TypePart);
         public int DataLength => BinaryPrimitives.ReadInt32BigEndian(LengthPart);
