@@ -59,7 +59,7 @@ namespace KoyashiroKohaku.PngChunkUtil
         public string TypeString => Encoding.UTF8.GetString(TypePart);
         public int DataLength => BinaryPrimitives.ReadInt32BigEndian(LengthPart);
         public string DataString => Encoding.UTF8.GetString(DataPart);
-        public int Crc => BinaryPrimitives.ReadInt32BigEndian(CrcPart);
+        public uint Crc => BinaryPrimitives.ReadUInt32BigEndian(CrcPart);
 
         public static bool TryCreate(byte[] source, out Chunk chunk)
         {
