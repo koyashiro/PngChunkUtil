@@ -73,6 +73,36 @@ namespace KoyashiroKohaku.PngChunkUtil.Test
             Assert.AreEqual("IEND", chunks.Last().TypeString);
         }
 
+        [TestMethod]
+        [TestCategory(nameof(Png.TrySplitIntoChunks))]
+        public void TrySplitIntoChunks_InputIsNull_ReturnFalseAndDefault()
+        {
+            Assert.IsFalse(Png.TrySplitIntoChunks(null, out var chunks));
+            Assert.AreEqual(default, chunks);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(InvalidPngs))]
+        [TestCategory(nameof(Png.TrySplitIntoChunks))]
+        public void TrySplitIntoChunks_InputIsInvalid_ReturnFalseAndDefault(byte[] image)
+        {
+            Assert.IsFalse(Png.TrySplitIntoChunks(image, out var chunks));
+            Assert.AreEqual(default, chunks);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidPngs))]
+        [TestCategory(nameof(Png.TrySplitIntoChunks))]
+        public void TrySplitIntoChunks_InputIsValid_ReturnTrunAndChunks(byte[] image)
+        {
+            Assert.IsTrue(Png.TrySplitIntoChunks(image, out var chunks));
+            Assert.IsTrue(chunks.Any());
+            Assert.IsTrue(chunks.All(c => c.IsValid()));
+            Assert.AreEqual("IHDR", chunks.First().TypeString);
+            Assert.IsTrue(chunks.Any(c => c.TypeString == "IDAT"));
+            Assert.AreEqual("IEND", chunks.Last().TypeString);
+        }
+
         [DataTestMethod]
         [TestCategory(nameof(Png.JoinToPng))]
         public void JoinToPng_InputIsNull_ThrowArgumentNullException()
@@ -93,9 +123,43 @@ namespace KoyashiroKohaku.PngChunkUtil.Test
         [TestCategory(nameof(Png.JoinToPng))]
         public void JoinToPng_InputIsValid_ReturnPngArray(Chunk[] chunks)
         {
-            var joinedPng = Png.JoinToPng(chunks);
-            var resplittedChunks = Png.SplitIntoChunks(joinedPng).ToArray();
+            var png = Png.JoinToPng(chunks);
+            var resplittedChunks = Png.SplitIntoChunks(png).ToArray();
+            Assert.AreEqual(chunks.Length, resplittedChunks.Length);
 
+            for (int i = 0; i < chunks.Length; i++)
+            {
+                var chunk = chunks[i];
+                var resplittedChunk = resplittedChunks[i];
+
+                Assert.IsTrue(chunk.Value.SequenceEqual(resplittedChunk.Value));
+            }
+        }
+
+        [DataTestMethod]
+        [TestCategory(nameof(Png.JoinToPng))]
+        public void TryJoinToPng_InputIsNull_ThrowArgumentNullException()
+        {
+            Assert.IsFalse(Png.TryJoinToPng(null, out var png));
+            Assert.AreEqual(default, png);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(InvalidChunks))]
+        [TestCategory(nameof(Png.JoinToPng))]
+        public void TryJoinToPng_InputIsInvalid_ThrowArgumentException(Chunk[] chunks)
+        {
+            Assert.IsFalse(Png.TryJoinToPng(chunks, out var png));
+            Assert.AreEqual(default, png);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(ValidChunks))]
+        [TestCategory(nameof(Png.JoinToPng))]
+        public void TryJoinToPng_InputIsValid_ReturnPngArray(Chunk[] chunks)
+        {
+            Assert.IsTrue(Png.TryJoinToPng(chunks, out var png));
+            var resplittedChunks = Png.SplitIntoChunks(png).ToArray();
             Assert.AreEqual(chunks.Length, resplittedChunks.Length);
 
             for (int i = 0; i < chunks.Length; i++)
