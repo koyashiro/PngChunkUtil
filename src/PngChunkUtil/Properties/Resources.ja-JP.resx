@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Invalid_Png" xml:space="preserve">
-    <value>Image is broken.</value>
+    <value>画像が壊れています。</value>
   </data>
   <data name="Broken_Chunk" xml:space="preserve">
-    <value>Chunk is broken.</value>
+    <value>チャンクが壊れています。</value>
   </data>
   <data name="Empty_Sequence" xml:space="preserve">
-    <value>The source sequence is empty.</value>
+    <value>ソース シーケンスが空です。</value>
   </data>
 </root>

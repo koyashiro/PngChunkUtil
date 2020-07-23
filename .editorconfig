@@ -2,20 +2,24 @@ root = true
 
 [*]
 charset = utf-8
+end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.cs]
-end_of_line = crlf
 indent_style = space
 indent_size = 4
 
 [*.csproj]
-end_of_line = crlf
 indent_style = space
 indent_size = 2
 
 [*.sln]
 end_of_line = crlf
 indent_style = tab
+indent_size = 2
+
+[*.resx]
+end_of_line = crlf
+indent_style = space
 indent_size = 2
