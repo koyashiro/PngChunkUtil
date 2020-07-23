@@ -39,12 +39,12 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (range.End.Value - range.Start.Value < 12)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(ResourceHelper.GetString("Broken_Chunk"), $"{nameof(source)}, {nameof(range)}");
             }
 
             if (!IsValid(source[range]))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(ResourceHelper.GetString("Broken_Chunk"), $"{nameof(source)}, {nameof(range)}");
             }
 
             _buffer = source;
