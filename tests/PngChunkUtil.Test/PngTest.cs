@@ -115,7 +115,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Test
         [TestCategory(nameof(Png.JoinToPng))]
         public void JoinToPng_InputIsInvalid_ThrowArgumentException(Chunk[] chunks)
         {
-            Assert.ThrowsException<ArgumentException>(() => Png.JoinToPng(chunks));
+            Assert.ThrowsException<InvalidOperationException>(() => Png.JoinToPng(chunks));
         }
 
         [DataTestMethod]

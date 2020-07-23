@@ -1,4 +1,4 @@
-using KoyashiroKohaku.PngChunkUtil.Properties;
+using KoyashiroKohaku.PngChunkUtil.Helpers;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -40,14 +40,14 @@ namespace KoyashiroKohaku.PngChunkUtil
             {
                 if (index + 8 > image.Length)
                 {
-                    throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
+                    throw new ArgumentException(ResourceHelper.GetString("Invalid_Png"), nameof(image));
                 }
 
                 var length = BinaryPrimitives.ReadInt32BigEndian(image[index..(index + 4)]) + 12;
 
                 if (index + length > image.Length)
                 {
-                    throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidChunk, nameof(image));
+                    throw new ArgumentException(ResourceHelper.GetString("Invalid_Png"), nameof(image));
                 }
 
                 yield return new Chunk(image, index..(index + length));
@@ -101,7 +101,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (!IsValidSignature(image))
             {
-                throw new ArgumentException(Resources.ChunkReader_SplitChunk_InvalidImage, nameof(image));
+                throw new ArgumentException(ResourceHelper.GetString("Invalid_Png"), nameof(image));
             }
 
             return InternalSplitIntoChunks(image);
@@ -127,7 +127,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (!chunks.Any())
             {
-                throw new ArgumentException(nameof(chunks));
+                throw new InvalidOperationException(ResourceHelper.GetString("Empty_Sequence"));
             }
 
             using var memoryStream = new MemoryStream();
@@ -139,7 +139,7 @@ namespace KoyashiroKohaku.PngChunkUtil
             {
                 if (!chunk.IsValid())
                 {
-                    throw new ArgumentException();
+                    throw new InvalidOperationException(ResourceHelper.GetString("Broken_Chunk"));
                 }
 
                 binaryWriter.Write(chunk.Value);

@@ -1,4 +1,5 @@
 using Force.Crc32;
+using KoyashiroKohaku.PngChunkUtil.Helpers;
 using System;
 using System.Buffers.Binary;
 using System.Text;
@@ -22,7 +23,7 @@ namespace KoyashiroKohaku.PngChunkUtil
 
             if (!InternalIsValid(chunk))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(ResourceHelper.GetString("Broken_Chunk"));
             }
 
             _buffer = chunk;
