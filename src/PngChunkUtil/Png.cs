@@ -156,6 +156,12 @@ namespace KoyashiroKohaku.PngChunkUtil
                 return false;
             }
 
+            if (!chunks.Any())
+            {
+                png = default;
+                return false;
+            }
+
             using var memoryStream = new MemoryStream();
             using var binaryWriter = new BinaryWriter(memoryStream);
 
