@@ -1,15 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>PngChunkUtil</AssemblyName>
     <RootNamespace>KoyashiroKohaku.PngChunkUtil</RootNamespace>
-    <Version>0.1.8</Version>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
+    <PackageId>PngChunkUtil</PackageId>
+    <Version>0.2.0</Version>
     <Authors>Koyashiro Kohaku</Authors>
-    <RepositoryUrl>https://github.com/KoyashiroKohaku/PngChunkUtil</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/KoyashiroKohaku/PngChunkUtil</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KoyashiroKohaku/PngChunkUtil</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en</NeutralLanguage>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
