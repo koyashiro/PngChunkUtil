@@ -4,3 +4,5 @@
 *.resx text=auto
 *.csproj text=auto
 *.sln text=auto eol=crlf
+
+*.png binary
