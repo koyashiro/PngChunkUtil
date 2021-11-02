@@ -50,8 +50,13 @@ namespace KoyashiroKohaku.PngChunkUtil
                     throw new ArgumentException(ResourceHelper.GetString("Invalid_Png"), nameof(image));
                 }
 
-                yield return new Chunk(image, index..(index + length));
+                var chunk = new Chunk(image, index..(index + length));
+                yield return chunk;
                 index += length;
+                if (CriticalChunk.IEND.SequenceEqual(chunk.TypePart))
+                {
+                    break;
+                }
             }
         }
 
@@ -86,6 +91,10 @@ namespace KoyashiroKohaku.PngChunkUtil
 
                 list.Add(chunk);
                 index += length;
+                if (CriticalChunk.IEND.SequenceEqual(chunk.TypePart))
+                {
+                    break;
+                }
             }
 
             chunks = list.ToArray();
