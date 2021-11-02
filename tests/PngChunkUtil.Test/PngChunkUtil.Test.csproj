@@ -8,8 +8,8 @@
     <Version>0.2.0</Version>
     <Authors>Koyashiro Kohaku</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/KoyashiroKohaku/PngChunkUtil</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/KoyashiroKohaku/PngChunkUtil</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/koyashiro/PngChunkUtil</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/koyashiro/PngChunkUtil</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en-US</NeutralLanguage>
     <IsPackable>false</IsPackable>
