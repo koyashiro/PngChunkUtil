@@ -52,11 +52,13 @@ namespace KoyashiroKohaku.PngChunkUtil
 
                 var chunk = new Chunk(image, index..(index + length));
                 yield return chunk;
-                index += length;
+
                 if (CriticalChunk.IEND.SequenceEqual(chunk.TypePart))
                 {
-                    break;
+                    yield break;
                 }
+
+                index += length;
             }
         }
 
@@ -90,11 +92,13 @@ namespace KoyashiroKohaku.PngChunkUtil
                 }
 
                 list.Add(chunk);
-                index += length;
+
                 if (CriticalChunk.IEND.SequenceEqual(chunk.TypePart))
                 {
                     break;
                 }
+
+                index += length;
             }
 
             chunks = list.ToArray();
