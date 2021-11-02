@@ -11,6 +11,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Test
     {
         private static readonly byte[] _invalidImage = File.ReadAllBytes(@"Assets/invalid.jpg");
         private static readonly byte[] _validImage = File.ReadAllBytes(@"Assets/valid.png");
+        private static readonly byte[] _almostValidImage = File.ReadAllBytes(@"Assets/almost_valid.png");
 
         private static IEnumerable<object[]> InvalidPngs => new object[][]
         {
@@ -27,7 +28,8 @@ namespace KoyashiroKohaku.PngChunkUtil.Test
 
         private static IEnumerable<object[]> ValidPngs => new object[][]
         {
-            new object[] { _validImage }
+            new object[] { _validImage },
+            new object[] { _almostValidImage },
         };
 
         private static IEnumerable<object[]> InvalidChunks => new object[][]
@@ -41,7 +43,8 @@ namespace KoyashiroKohaku.PngChunkUtil.Test
 
         private static IEnumerable<object[]> ValidChunks => new object[][]
         {
-            new object[] { Png.SplitIntoChunks(_validImage).ToArray() }
+            new object[] { Png.SplitIntoChunks(_validImage).ToArray() },
+            new object[] { Png.SplitIntoChunks(_almostValidImage).ToArray() },
         };
 
         [TestMethod]
