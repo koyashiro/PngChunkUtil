@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
     <PackageId>PngChunkUtil</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Koyashiro Kohaku</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/koyashiro/PngChunkUtil</PackageProjectUrl>

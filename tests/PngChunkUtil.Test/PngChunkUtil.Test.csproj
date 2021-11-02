@@ -5,7 +5,7 @@
     <RootNamespace>KoyashiroKohaku.PngChunkUtil.Test</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>PngChunkUtil.Test</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Koyashiro Kohaku</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/koyashiro/PngChunkUtil</PackageProjectUrl>
