@@ -7,7 +7,7 @@ namespace KoyashiroKohaku.PngChunkUtil
     /// <summary>
     /// Chunk
     /// </summary>
-    public struct Chunk : IEquatable<Chunk>
+    public readonly struct Chunk : IEquatable<Chunk>
     {
         private static readonly Range LENGTH_RANGE = 0..4;
         private static readonly Range CHUNK_TYPE_RANGE = 4..8;
@@ -143,42 +143,62 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         public int? ChunkDataLength()
         {
+            if (_buffer is null)
+            {
+                return default;
+            }
+
             if (!IsValid())
             {
                 return default;
             }
 
-            return BinaryPrimitives.ReadInt32BigEndian(LengthBytes);
+            return BinaryPrimitives.ReadInt32BigEndian(_buffer[LENGTH_RANGE]);
         }
 
         public string? ChunkType()
         {
+            if (_buffer is null)
+            {
+                return default;
+            }
+
             if (!IsValid())
             {
                 return default;
             }
 
-            return Encoding.UTF8.GetString(ChunkTypeBytes);
+            return Encoding.UTF8.GetString(_buffer[CHUNK_TYPE_RANGE]);
         }
 
         public string? ChunkData()
         {
+            if (_buffer is null)
+            {
+                return default;
+            }
+
             if (!IsValid())
             {
                 return default;
             }
 
-            return Encoding.UTF8.GetString(ChunkDataBytes);
+            return Encoding.UTF8.GetString(_buffer[CHUNK_DATA_RANGE]);
         }
 
         public uint? Crc()
         {
+            if (_buffer is null)
+            {
+                return default;
+            }
+
             if (!IsValid())
             {
                 return default;
             }
 
-            return BinaryPrimitives.ReadUInt32BigEndian(CrcBytes);
+            return BinaryPrimitives.ReadUInt32BigEndian(_buffer[CRC_RANGE]);
         }
 
         public override string ToString()
