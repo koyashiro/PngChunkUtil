@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>PngChunkUtil.Test</AssemblyName>
     <RootNamespace>KoyashiroKohaku.PngChunkUtil.Test</RootNamespace>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PackageId>PngChunkUtil.Test</PackageId>
     <Version>0.3.0</Version>
     <Authors>Koyashiro Kohaku</Authors>

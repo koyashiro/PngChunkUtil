@@ -1,5 +1,3 @@
-using Force.Crc32;
-using KoyashiroKohaku.PngChunkUtil.Helpers;
 using System;
 using System.Buffers.Binary;
 using System.Text;
@@ -11,132 +9,131 @@ namespace KoyashiroKohaku.PngChunkUtil
     /// </summary>
     public struct Chunk : IEquatable<Chunk>
     {
-        private readonly byte[] _buffer;
-        private readonly Range _range;
+        private static readonly Range LENGTH_RANGE = 0..4;
+        private static readonly Range CHUNK_TYPE_RANGE = 4..8;
+        private static readonly Range CHUNK_DATA_RANGE = 8..^4;
+        private static readonly Range CRC_RANGE = ^4..;
 
-        public Chunk(byte[] chunk)
+        private static readonly Range CRC_TARGET_RANGE = 4..^4;
+
+        private readonly byte[]? _buffer;
+
+        private Chunk(ReadOnlySpan<byte> buffer)
         {
-            if (chunk is null)
-            {
-                throw new ArgumentNullException(nameof(chunk));
-            }
-
-            if (!InternalIsValid(chunk))
-            {
-                throw new ArgumentException(ResourceHelper.GetString("Broken_Chunk"));
-            }
-
-            _buffer = chunk;
-            _range = ..;
+            _buffer = buffer.ToArray();
         }
 
-        internal Chunk(byte[] source, Range range)
+        public ReadOnlySpan<byte> Bytes => _buffer;
+        public ReadOnlySpan<byte> LengthBytes => _buffer?[LENGTH_RANGE];
+        public ReadOnlySpan<byte> ChunkTypeBytes => _buffer?[CHUNK_TYPE_RANGE];
+        public ReadOnlySpan<byte> ChunkDataBytes => _buffer?[CHUNK_DATA_RANGE];
+        public ReadOnlySpan<byte> CrcBytes => _buffer?[CRC_RANGE];
+
+        public static Chunk Parse(ReadOnlySpan<byte> buffer)
         {
-            if (source is null)
+            if (buffer.Length < 4)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentException("`buffer.Length` must be grater than or equal to 4", nameof(buffer));
             }
 
-            if (range.End.Value - range.Start.Value < 12)
+            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(buffer[LENGTH_RANGE]);
+            if (buffer.Length != chunkDataLength + 12)
             {
-                throw new ArgumentException(ResourceHelper.GetString("Broken_Chunk"), $"{nameof(source)}, {nameof(range)}");
+                throw new ArgumentException("`Length` and `buffer.Length` do not match", nameof(buffer));
             }
 
-            if (!IsValid(source[range]))
-            {
-                throw new ArgumentException(ResourceHelper.GetString("Broken_Chunk"), $"{nameof(source)}, {nameof(range)}");
-            }
-
-            _buffer = source;
-            _range = range;
+            return new Chunk(buffer);
         }
 
-        public ReadOnlySpan<byte> Value => _buffer.AsSpan(_range);
-        public ReadOnlySpan<byte> LengthPart => Value[..4];
-        public ReadOnlySpan<byte> TypePart => Value[4..8];
-        public ReadOnlySpan<byte> DataPart => Value[8..^4];
-        public ReadOnlySpan<byte> CrcPart => Value[^4..];
-
-        public string TypeString => Encoding.UTF8.GetString(TypePart);
-        public int DataLength => BinaryPrimitives.ReadInt32BigEndian(LengthPart);
-        public string DataString => Encoding.UTF8.GetString(DataPart);
-        public uint Crc => BinaryPrimitives.ReadUInt32BigEndian(CrcPart);
-
-        public static bool TryCreate(byte[] source, out Chunk chunk)
+        public static bool TryParse(ReadOnlySpan<byte> buffer, out Chunk chunk)
         {
-            if (source is null)
+            if (buffer.Length < 4)
             {
                 chunk = default;
                 return false;
             }
 
-            if (!InternalIsValid(source))
+            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(buffer[LENGTH_RANGE]);
+            if (buffer.Length != chunkDataLength + 12)
             {
                 chunk = default;
                 return false;
             }
 
-            chunk = new Chunk(source);
+            chunk = new Chunk(buffer);
             return true;
         }
 
-        public static bool TryCreate(byte[] source, Range range, out Chunk chunk)
+        public static Chunk Create(ReadOnlySpan<byte> chunkType, ReadOnlySpan<byte> chunkData)
         {
-            if (source is null)
+            if (chunkType.Length != 4)
+            {
+                throw new ArgumentException("`chunkType.Length` must be 4", nameof(chunkType));
+            }
+
+            var buffer = new byte[12 + chunkData.Length];
+            var span = buffer.AsSpan();
+            BinaryPrimitives.WriteInt32BigEndian(span[LENGTH_RANGE], chunkData.Length);
+            chunkType.CopyTo(span[CHUNK_TYPE_RANGE]);
+            chunkData.CopyTo(span[CHUNK_DATA_RANGE]);
+            BinaryPrimitives.WriteUInt32BigEndian(span[CRC_RANGE], Crc32.Compute(span[CRC_TARGET_RANGE]));
+
+            return new Chunk(buffer);
+        }
+
+        public static bool TryCreate(ReadOnlySpan<byte> chunkType, ReadOnlySpan<byte> chunkData, out Chunk chunk)
+        {
+            if (chunkType.Length != 4)
             {
                 chunk = default;
                 return false;
             }
 
-            if (range.End.Value - range.Start.Value < 12)
-            {
-                chunk = default;
-                return false;
-            }
+            var buffer = new byte[12 + chunkData.Length];
+            var span = buffer.AsSpan();
+            BinaryPrimitives.WriteInt32BigEndian(span[LENGTH_RANGE], chunkData.Length);
+            chunkType.CopyTo(span[CHUNK_TYPE_RANGE]);
+            chunkData.CopyTo(span[CHUNK_DATA_RANGE]);
+            BinaryPrimitives.WriteUInt32BigEndian(span[CRC_RANGE], Crc32.Compute(span[CRC_TARGET_RANGE]));
 
-            if (!InternalIsValid(source.AsSpan(range)))
-            {
-                chunk = default;
-                return false;
-            }
-
-            chunk = new Chunk(source, range);
+            chunk = new Chunk(buffer);
             return true;
         }
 
-        private static bool IsValid(byte[] chunk)
+        public static Chunk Create(string chunkType, string chunkData)
         {
-            if (chunk is null)
-            {
-                return false;
-            }
+            var chunkTypeBytes = Encoding.UTF8.GetBytes(chunkType);
+            var chunkDataBytes = string.IsNullOrEmpty(chunkData) ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(chunkData);
 
-            return InternalIsValid(chunk);
+            return Create(chunkTypeBytes, chunkDataBytes);
         }
 
-        private static bool IsValid(ReadOnlySpan<byte> chunk)
+        public static bool TryCreate(string chunkType, string chunkData, out Chunk chunk)
         {
-            return InternalIsValid(chunk);
+            var chunkTypeBytes = Encoding.UTF8.GetBytes(chunkType);
+            var chunkDataBytes = string.IsNullOrEmpty(chunkData) ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(chunkData);
+
+            return TryCreate(chunkTypeBytes, chunkDataBytes, out chunk);
         }
 
         public bool IsValid()
         {
-            return this != default;
-        }
-
-        internal static bool InternalIsValid(ReadOnlySpan<byte> chunk)
-        {
-            if (chunk.Length < 4)
+            if (_buffer is null)
             {
                 return false;
             }
 
-            if (chunk.Length != 12 + BinaryPrimitives.ReadInt32BigEndian(chunk[0..4]))
+            if (_buffer.Length < 4)
             {
                 return false;
             }
 
-            if (CalculateCrc(chunk[4..^4]) != BinaryPrimitives.ReadUInt32BigEndian(chunk[^4..]))
+            if (_buffer.Length != 12 + BinaryPrimitives.ReadInt32BigEndian(_buffer[LENGTH_RANGE]))
+            {
+                return false;
+            }
+
+            if (Crc32.Compute(_buffer[CRC_TARGET_RANGE]) != BinaryPrimitives.ReadUInt32BigEndian(_buffer[CRC_RANGE]))
             {
                 return false;
             }
@@ -144,48 +141,54 @@ namespace KoyashiroKohaku.PngChunkUtil
             return true;
         }
 
-        private static uint CalculateCrc(ReadOnlySpan<byte> typeDataChunk)
+        public int? ChunkDataLength()
         {
-            Span<byte> source = typeDataChunk.Length <= 128 ? stackalloc byte[typeDataChunk.Length] : new byte[typeDataChunk.Length];
+            if (!IsValid())
+            {
+                return default;
+            }
 
-            typeDataChunk.CopyTo(source);
-
-            return Crc32Algorithm.Compute(source.ToArray());
+            return BinaryPrimitives.ReadInt32BigEndian(LengthBytes);
         }
 
-        public static bool IsCriticalChunk(ReadOnlySpan<byte> chunkType)
+        public string? ChunkType()
         {
-            return chunkType.SequenceEqual(CriticalChunk.IHDR)
-                || chunkType.SequenceEqual(CriticalChunk.PLTE)
-                || chunkType.SequenceEqual(CriticalChunk.IDAT)
-                || chunkType.SequenceEqual(CriticalChunk.IEND);
+            if (!IsValid())
+            {
+                return default;
+            }
+
+            return Encoding.UTF8.GetString(ChunkTypeBytes);
         }
 
-        public static bool IsAncillaryChunk(ReadOnlySpan<byte> chunkType)
+        public string? ChunkData()
         {
-            return chunkType.SequenceEqual(AncillaryChunk.CHRM)
-                || chunkType.SequenceEqual(AncillaryChunk.GAMA)
-                || chunkType.SequenceEqual(AncillaryChunk.ICCP)
-                || chunkType.SequenceEqual(AncillaryChunk.SBIT)
-                || chunkType.SequenceEqual(AncillaryChunk.SRGB)
-                || chunkType.SequenceEqual(AncillaryChunk.BKGD)
-                || chunkType.SequenceEqual(AncillaryChunk.HIST)
-                || chunkType.SequenceEqual(AncillaryChunk.TRNS)
-                || chunkType.SequenceEqual(AncillaryChunk.PHYS)
-                || chunkType.SequenceEqual(AncillaryChunk.TIME)
-                || chunkType.SequenceEqual(AncillaryChunk.ITXT)
-                || chunkType.SequenceEqual(AncillaryChunk.TEXT)
-                || chunkType.SequenceEqual(AncillaryChunk.ZTXT);
+            if (!IsValid())
+            {
+                return default;
+            }
+
+            return Encoding.UTF8.GetString(ChunkDataBytes);
         }
 
-        public static bool IsAdditionalChunk(ReadOnlySpan<byte> chunkType)
+        public uint? Crc()
         {
-            return !IsCriticalChunk(chunkType) && !IsAncillaryChunk(chunkType);
+            if (!IsValid())
+            {
+                return default;
+            }
+
+            return BinaryPrimitives.ReadUInt32BigEndian(CrcBytes);
         }
 
         public override string ToString()
         {
-            return $"{TypeString}: {DataString}";
+            if (!IsValid())
+            {
+                return "Invalid Chunk";
+            }
+
+            return $"{ChunkType()}: {ChunkData()}";
         }
 
         public override bool Equals(object obj)
@@ -200,12 +203,12 @@ namespace KoyashiroKohaku.PngChunkUtil
 
         public bool Equals(Chunk other)
         {
-            return Value.SequenceEqual(other.Value);
+            return Bytes.SequenceEqual(other.Bytes);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_buffer, _range);
+            return HashCode.Combine(_buffer);
         }
 
         public static bool operator ==(Chunk left, Chunk right)
