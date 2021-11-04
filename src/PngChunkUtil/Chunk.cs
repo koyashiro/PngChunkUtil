@@ -100,6 +100,20 @@ namespace KoyashiroKohaku.PngChunkUtil
             return true;
         }
 
+        public static Chunk Create(string chunkType, ReadOnlySpan<byte> chunkData)
+        {
+            var chunkTypeBytes = Encoding.UTF8.GetBytes(chunkType);
+
+            return Create(chunkTypeBytes, chunkData);
+        }
+
+        public static bool TryCreate(string chunkType, ReadOnlySpan<byte> chunkData, out Chunk chunk)
+        {
+            var chunkTypeBytes = Encoding.UTF8.GetBytes(chunkType);
+
+            return TryCreate(chunkTypeBytes, chunkData, out chunk);
+        }
+
         public static Chunk Create(string chunkType, string chunkData)
         {
             var chunkTypeBytes = Encoding.UTF8.GetBytes(chunkType);

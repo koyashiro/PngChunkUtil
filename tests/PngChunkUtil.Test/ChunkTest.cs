@@ -41,7 +41,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
             }
         };
 
-        private static IEnumerable<object[]> InvalidChunkParams => new object[][]
+        private static IEnumerable<object[]> InvalidChunkBytesParams => new object[][]
         {
             new object[]
             {
@@ -89,7 +89,67 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
             }
         };
 
-        private static IEnumerable<object[]> ValidChunkParams => new object[][]
+        private static IEnumerable<object[]> InvalidChunkStringBytesParams => new object[][]
+        {
+            new object[]
+            {
+                "A",
+                new byte[4]
+                {
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            },
+            new object[]
+            {
+                "AB",
+                new byte[4]
+                {
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            },
+            new object[]
+            {
+                "ABC",
+                new byte[4]
+                {
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            },
+            new object[]
+            {
+                "ABCDE",
+                new byte[4]
+                {
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            }
+        };
+
+        private static IEnumerable<object[]> InvalidChunkStringParams => new object[][]
+        {
+            new object[]
+            {
+                "A",
+                "XYZ"
+            },
+            new object[]
+            {
+                "AB",
+                "XYZ"
+            },
+            new object[]
+            {
+                "ABC",
+                "XYZ"
+            },
+            new object[]
+            {
+                "ABCDE",
+                "XYZ"
+            }
+        };
+
+        private static IEnumerable<object[]> ValidChunkBytesParams => new object[][]
         {
             new object[]
             {
@@ -112,6 +172,40 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
                 {
                     0xae, 0x42, 0x60, 0x82
                 }
+            }
+        };
+
+        private static IEnumerable<object[]> ValidChunkStringBytesParams => new object[][]
+        {
+            new object[]
+            {
+                "IHDR",
+                new byte[4]
+                {
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            },
+            new object[]
+            {
+                "IEND",
+                new byte[4]
+                {
+                    0xa8, 0xa1, 0xae, 0x0a
+                }
+            }
+        };
+
+        private static IEnumerable<object[]> ValidChunkStringParams => new object[][]
+        {
+            new object[]
+            {
+                "IHDR",
+                "XYZ"
+            },
+            new object[]
+            {
+                "IEND",
+                "XYZ"
             }
         };
 
@@ -158,35 +252,105 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        [DynamicData(nameof(InvalidChunkParams))]
+        [DynamicData(nameof(InvalidChunkBytesParams))]
         [TestCategory(nameof(Chunk.Create))]
-        public void Create_InvalidChunkParams_ThrowArgumentException(byte[] chunkType, byte[] chunkData)
+        public void Create_InvalidChunkBytesParams_ThrowArgumentException(byte[] chunkType, byte[] chunkData)
         {
             Assert.ThrowsException<ArgumentException>(() => Chunk.Create(chunkType, chunkData));
         }
 
         [TestMethod]
-        [DynamicData(nameof(ValidChunkParams))]
+        [DynamicData(nameof(ValidChunkBytesParams))]
         [TestCategory(nameof(Chunk.Create))]
-        public void Create_ValidChunkParams_ReturnChunk(byte[] chunkType, byte[] chunkData)
+        public void Create_ValidChunkBytesParams_ReturnChunk(byte[] chunkType, byte[] chunkData)
         {
             var chunk = Chunk.Create(chunkType, chunkData);
             Assert.AreNotEqual(default(Chunk), chunk);
         }
 
         [TestMethod]
-        [DynamicData(nameof(InvalidChunkParams))]
+        [DynamicData(nameof(InvalidChunkBytesParams))]
         [TestCategory(nameof(Chunk.TryCreate))]
-        public void TryCreate_InvalidChunkParams_ThrowArgumentException(byte[] chunkType, byte[] chunkData)
+        public void TryCreate_InvalidChunkBytesParams_ThrowArgumentException(byte[] chunkType, byte[] chunkData)
         {
             Assert.IsFalse(Chunk.TryCreate(chunkType, chunkData, out var chunk));
             Assert.AreEqual(default(Chunk), chunk);
         }
 
         [TestMethod]
-        [DynamicData(nameof(ValidChunkParams))]
+        [DynamicData(nameof(ValidChunkBytesParams))]
         [TestCategory(nameof(Chunk.TryCreate))]
-        public void TryCreate_ValidChunkParams_ReturnChunk(byte[] chunkType, byte[] chunkData)
+        public void TryCreate_ValidChunkBytesParams_ReturnChunk(byte[] chunkType, byte[] chunkData)
+        {
+            Assert.IsTrue(Chunk.TryCreate(chunkType, chunkData, out var chunk));
+            Assert.AreNotEqual(default(Chunk), chunk);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(InvalidChunkStringBytesParams))]
+        [TestCategory(nameof(Chunk.Create))]
+        public void Create_InvalidChunkStringBytesParams_ThrowArgumentException(string chunkType, byte[] chunkData)
+        {
+            Assert.ThrowsException<ArgumentException>(() => Chunk.Create(chunkType, chunkData));
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkStringBytesParams))]
+        [TestCategory(nameof(Chunk.Create))]
+        public void Create_ValidChunkStringBytesParams_ReturnChunk(string chunkType, byte[] chunkData)
+        {
+            var chunk = Chunk.Create(chunkType, chunkData);
+            Assert.AreNotEqual(default(Chunk), chunk);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(InvalidChunkStringBytesParams))]
+        [TestCategory(nameof(Chunk.TryCreate))]
+        public void TryCreate_InvalidChunkStringBytesParams_ThrowArgumentException(string chunkType, byte[] chunkData)
+        {
+            Assert.IsFalse(Chunk.TryCreate(chunkType, chunkData, out var chunk));
+            Assert.AreEqual(default(Chunk), chunk);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkStringBytesParams))]
+        [TestCategory(nameof(Chunk.TryCreate))]
+        public void TryCreate_ValidChunkStringBytesParams_ReturnChunk(string chunkType, byte[] chunkData)
+        {
+            Assert.IsTrue(Chunk.TryCreate(chunkType, chunkData, out var chunk));
+            Assert.AreNotEqual(default(Chunk), chunk);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(InvalidChunkStringParams))]
+        [TestCategory(nameof(Chunk.Create))]
+        public void Create_InvalidChunkStringParams_ThrowArgumentException(string chunkType, string chunkData)
+        {
+            Assert.ThrowsException<ArgumentException>(() => Chunk.Create(chunkType, chunkData));
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkStringParams))]
+        [TestCategory(nameof(Chunk.Create))]
+        public void Create_ValidChunkStringParams_ReturnChunk(string chunkType, string chunkData)
+        {
+            var chunk = Chunk.Create(chunkType, chunkData);
+            Assert.AreNotEqual(default(Chunk), chunk);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(InvalidChunkStringParams))]
+        [TestCategory(nameof(Chunk.TryCreate))]
+        public void TryCreate_InvalidChunkStringParams_ThrowArgumentException(string chunkType, string chunkData)
+        {
+            Assert.IsFalse(Chunk.TryCreate(chunkType, chunkData, out var chunk));
+            Assert.AreEqual(default(Chunk), chunk);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ValidChunkStringParams))]
+        [TestCategory(nameof(Chunk.TryCreate))]
+        public void TryCreate_ValidChunkStringParams_ReturnChunk(string chunkType, string chunkData)
         {
             Assert.IsTrue(Chunk.TryCreate(chunkType, chunkData, out var chunk));
             Assert.AreNotEqual(default(Chunk), chunk);
