@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>PngChunkUtil</AssemblyName>
     <RootNamespace>KoyashiroKohaku.PngChunkUtil</RootNamespace>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
     <PackageId>PngChunkUtil</PackageId>

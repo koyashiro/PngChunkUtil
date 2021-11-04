@@ -225,7 +225,7 @@ namespace KoyashiroKohaku.PngChunkUtil
             return $"{ChunkType()}: {ChunkData()}";
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is Chunk other)
             {
