@@ -266,6 +266,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             var chunk = Chunk.Create(chunkType, chunkData);
             Assert.AreNotEqual(default(Chunk), chunk);
+            Assert.IsTrue(chunk.IsValid());
         }
 
         [TestMethod]
@@ -284,6 +285,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             Assert.IsTrue(Chunk.TryCreate(chunkType, chunkData, out var chunk));
             Assert.AreNotEqual(default(Chunk), chunk);
+            Assert.IsTrue(chunk.IsValid());
         }
 
         [TestMethod]
@@ -301,6 +303,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             var chunk = Chunk.Create(chunkType, chunkData);
             Assert.AreNotEqual(default(Chunk), chunk);
+            Assert.IsTrue(chunk.IsValid());
         }
 
         [TestMethod]
@@ -319,6 +322,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             Assert.IsTrue(Chunk.TryCreate(chunkType, chunkData, out var chunk));
             Assert.AreNotEqual(default(Chunk), chunk);
+            Assert.IsTrue(chunk.IsValid());
         }
 
         [TestMethod]
@@ -336,6 +340,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             var chunk = Chunk.Create(chunkType, chunkData);
             Assert.AreNotEqual(default(Chunk), chunk);
+            Assert.IsTrue(chunk.IsValid());
         }
 
         [TestMethod]
@@ -354,6 +359,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         {
             Assert.IsTrue(Chunk.TryCreate(chunkType, chunkData, out var chunk));
             Assert.AreNotEqual(default(Chunk), chunk);
+            Assert.IsTrue(chunk.IsValid());
         }
 
         [TestMethod]
