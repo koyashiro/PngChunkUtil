@@ -30,38 +30,38 @@ namespace KoyashiroKohaku.PngChunkUtil
         public ReadOnlySpan<byte> ChunkDataBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CHUNK_DATA_RANGE];
         public ReadOnlySpan<byte> CrcBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CRC_RANGE];
 
-        public static Chunk Parse(ReadOnlyMemory<byte> buffer)
+        public static Chunk Parse(ReadOnlyMemory<byte> input)
         {
-            if (buffer.Length < 4)
+            if (input.Length < 4)
             {
-                throw new ArgumentException("`buffer.Length` must be grater than or equal to 4", nameof(buffer));
+                throw new ArgumentException("`input.Length` must be grater than or equal to 4", nameof(input));
             }
 
-            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(buffer.Span[LENGTH_RANGE]);
-            if (buffer.Length != chunkDataLength + 12)
+            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(input.Span[LENGTH_RANGE]);
+            if (input.Length != chunkDataLength + 12)
             {
-                throw new ArgumentException("`Length` and `buffer.Length` do not match", nameof(buffer));
+                throw new ArgumentException("`Length` and `input.Length` do not match", nameof(input));
             }
 
-            return new Chunk(buffer);
+            return new Chunk(input);
         }
 
-        public static bool TryParse(ReadOnlyMemory<byte> buffer, out Chunk chunk)
+        public static bool TryParse(ReadOnlyMemory<byte> input, out Chunk chunk)
         {
-            if (buffer.Length < 4)
+            if (input.Length < 4)
             {
                 chunk = default;
                 return false;
             }
 
-            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(buffer.Span[LENGTH_RANGE]);
-            if (buffer.Length != chunkDataLength + 12)
+            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(input.Span[LENGTH_RANGE]);
+            if (input.Length != chunkDataLength + 12)
             {
                 chunk = default;
                 return false;
             }
 
-            chunk = new Chunk(buffer);
+            chunk = new Chunk(input);
             return true;
         }
 
