@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Binary;
+using System.IO.Hashing;
 using System.Text;
 
 namespace KoyashiroKohaku.PngChunkUtil
@@ -76,7 +77,8 @@ namespace KoyashiroKohaku.PngChunkUtil
             BinaryPrimitives.WriteInt32BigEndian(span[LENGTH_RANGE], chunkData.Length);
             chunkType.CopyTo(span[CHUNK_TYPE_RANGE]);
             chunkData.CopyTo(span[CHUNK_DATA_RANGE]);
-            BinaryPrimitives.WriteUInt32BigEndian(span[CRC_RANGE], Crc32.Compute(span[CRC_TARGET_RANGE]));
+            var crc = BinaryPrimitives.ReadUInt32LittleEndian(Crc32.Hash(span[CRC_TARGET_RANGE]));
+            BinaryPrimitives.WriteUInt32BigEndian(span[CRC_RANGE], crc);
 
             return new Chunk(buffer);
         }
@@ -94,7 +96,8 @@ namespace KoyashiroKohaku.PngChunkUtil
             BinaryPrimitives.WriteInt32BigEndian(span[LENGTH_RANGE], chunkData.Length);
             chunkType.CopyTo(span[CHUNK_TYPE_RANGE]);
             chunkData.CopyTo(span[CHUNK_DATA_RANGE]);
-            BinaryPrimitives.WriteUInt32BigEndian(span[CRC_RANGE], Crc32.Compute(span[CRC_TARGET_RANGE]));
+            var crc = BinaryPrimitives.ReadUInt32LittleEndian(Crc32.Hash(span[CRC_TARGET_RANGE]));
+            BinaryPrimitives.WriteUInt32BigEndian(span[CRC_RANGE], crc);
 
             chunk = new Chunk(buffer);
             return true;
@@ -142,7 +145,8 @@ namespace KoyashiroKohaku.PngChunkUtil
                 return false;
             }
 
-            if (Crc32.Compute(_buffer.Span[CRC_TARGET_RANGE]) != BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]))
+            var crc = BinaryPrimitives.ReadUInt32LittleEndian(Crc32.Hash(_buffer.Span[CRC_TARGET_RANGE]));
+            if (crc != BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]))
             {
                 return false;
             }
