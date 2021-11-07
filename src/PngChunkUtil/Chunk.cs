@@ -30,6 +30,11 @@ namespace KoyashiroKohaku.PngChunkUtil
         public ReadOnlySpan<byte> ChunkDataBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CHUNK_DATA_RANGE];
         public ReadOnlySpan<byte> CrcBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CRC_RANGE];
 
+        public int? ChunkDataLength => IsValid() ? BinaryPrimitives.ReadInt32BigEndian(_buffer.Span[LENGTH_RANGE]) : default;
+        public string? ChunkType() => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_TYPE_RANGE]) : default;
+        public string? ChunkData() => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_DATA_RANGE]) : default;
+        public uint? Crc() => IsValid() ? BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]) : default;
+
         public static Chunk Parse(ReadOnlyMemory<byte> input)
         {
             if (input.Length < 4)
@@ -157,46 +162,6 @@ namespace KoyashiroKohaku.PngChunkUtil
             }
 
             return true;
-        }
-
-        public int? ChunkDataLength()
-        {
-            if (!IsValid())
-            {
-                return default;
-            }
-
-            return BinaryPrimitives.ReadInt32BigEndian(_buffer.Span[LENGTH_RANGE]);
-        }
-
-        public string? ChunkType()
-        {
-            if (!IsValid())
-            {
-                return default;
-            }
-
-            return Encoding.UTF8.GetString(_buffer.Span[CHUNK_TYPE_RANGE]);
-        }
-
-        public string? ChunkData()
-        {
-            if (!IsValid())
-            {
-                return default;
-            }
-
-            return Encoding.UTF8.GetString(_buffer.Span[CHUNK_DATA_RANGE]);
-        }
-
-        public uint? Crc()
-        {
-            if (!IsValid())
-            {
-                return default;
-            }
-
-            return BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]);
         }
 
         public override string ToString()

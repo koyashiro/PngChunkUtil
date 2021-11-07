@@ -453,7 +453,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void ChunkDataLength_Default_ReturnDefault()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default, chunk.ChunkDataLength());
+            Assert.AreEqual(default, chunk.ChunkDataLength);
         }
 
         [TestMethod]
@@ -462,7 +462,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void ChunkDataLength_ValidChunkBytes_ReturnChunkDataLength(byte[] buffer)
         {
             var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(BinaryPrimitives.ReadInt32BigEndian(buffer[..4]), chunk.ChunkDataLength());
+            Assert.AreEqual(BinaryPrimitives.ReadInt32BigEndian(buffer[..4]), chunk.ChunkDataLength);
         }
 
         [TestMethod]
