@@ -453,7 +453,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void ChunkDataLength_Default_ReturnDefault()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default, chunk.ChunkDataLength);
+            Assert.AreEqual(default(int?), chunk.ChunkDataLength);
         }
 
         [TestMethod]
@@ -470,7 +470,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void ChunkType_Default_ReturnEmpty()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default, chunk.ChunkType());
+            Assert.AreEqual(default(string), chunk.ChunkType());
         }
 
         [TestMethod]
@@ -487,7 +487,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void ChunkData_Default_ReturnEmpty()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default, chunk.ChunkData());
+            Assert.AreEqual(default(string), chunk.ChunkData());
         }
 
         [TestMethod]
@@ -504,7 +504,7 @@ namespace KoyashiroKohaku.PngChunkUtil.Tests
         public void Crc_Default_ReturnDefault()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default, chunk.Crc());
+            Assert.AreEqual(default(uint?), chunk.Crc());
         }
 
         [TestMethod]
