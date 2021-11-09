@@ -1,0 +1,12 @@
+# ChunkReader
+
+```log
+$ dotnet run
+
+Length:    13,    Chunk Type: IHDR,    Chunk Data: [ 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, ... ]
+Length:     1,    Chunk Type: sRGB,    Chunk Data: [ 0x00 ]
+Length:     4,    Chunk Type: gAMA,    Chunk Data: [ 0x00, 0x00, 0xb1, 0x8f ]
+Length:     9,    Chunk Type: pHYs,    Chunk Data: [ 0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16, 0x25, ... ]
+Length: 11078,    Chunk Type: IDAT,    Chunk Data: [ 0x78, 0x5e, 0xed, 0xdd, 0xed, 0x61, 0xdb, 0xba, ... ]
+Length:     0,    Chunk Type: IEND,    Chunk Data: [  ]
+```
