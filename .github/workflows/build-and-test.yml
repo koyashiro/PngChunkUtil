@@ -2,9 +2,12 @@ name: Build and Test
 
 on:
   push:
-    branches: [main]
+    branches:
+      - develop
   pull_request:
-    branches: [main]
+    branches:
+      - develop
+      - main
 
 jobs:
   build:
@@ -15,7 +18,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.101
+          dotnet-version: 6.0.0
       - name: Install .NET Core local tools
         run: dotnet tool restore
       - name: Format check
