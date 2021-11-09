@@ -175,7 +175,7 @@ namespace Koyashiro.PngChunkUtil
             var sb = new StringBuilder();
 
             sb.Append("Length: ");
-            sb.AppendFormat("{0,5}", Length);
+            sb.AppendFormat(CULTURE_INFO, "{0,5}", Length);
             sb.Append(",   ");
 
             sb.Append("ChunkType: ");
