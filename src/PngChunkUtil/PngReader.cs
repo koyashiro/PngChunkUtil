@@ -18,7 +18,7 @@ namespace Koyashiro.PngChunkUtil
             return source[0..8].SequenceEqual(Png.Signature);
         }
 
-        public static Chunk[] Parse(ReadOnlyMemory<byte> input)
+        public static Chunk[] ReadBytes(ReadOnlyMemory<byte> input)
         {
             if (!HasSignature(input.Span))
             {
@@ -61,7 +61,7 @@ namespace Koyashiro.PngChunkUtil
             return chunks.ToArray();
         }
 
-        public static bool TryParse(ReadOnlyMemory<byte> input, [MaybeNullWhen(false)] out Chunk[] chunks)
+        public static bool TryReadBytes(ReadOnlyMemory<byte> input, [MaybeNullWhen(false)] out Chunk[] chunks)
         {
             if (!HasSignature(input.Span))
             {

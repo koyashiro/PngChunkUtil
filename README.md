@@ -12,7 +12,7 @@ using System.IO;
 using Koyashiro.PngChunkUtil;
 
 var png = File.ReadAllBytes("example.png");
-var chunks = PngReader.Parse(png);
+var chunks = PngReader.ReadBytes(png);
 var chunk = chunks[0];
 
 Console.WriteLine(chunk.Length); // 13
@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using Koyashiro.PngChunkUtil;
 
-var chunks = PngReader.Parse(File.ReadAllBytes("example.png")).ToList();
+var chunks = PngReader.ReadBytes(File.ReadAllBytes("example.png")).ToList();
 chunks.Add(Chunk.Create("ABCD", new byte[4] { 0x00, 0x01, 0x02, 0x03 }));
 var output = PngWriter.WriteBytes(CollectionsMarshal.AsSpan(chunks));
 ```

@@ -41,7 +41,7 @@ namespace Koyashiro.PngChunkUtil.Test
 
         private static IEnumerable<object[]> ValidChunks => new object[][]
         {
-            new object[] { PngReader.Parse(_validImage).ToArray() }
+            new object[] { PngReader.ReadBytes(_validImage).ToArray() }
         };
 
         [DataTestMethod]
@@ -65,7 +65,7 @@ namespace Koyashiro.PngChunkUtil.Test
         public void WriteBytes_InputIsValid_ReturnPngArray(Chunk[] chunks)
         {
             var png = PngWriter.WriteBytes(chunks);
-            var resplittedChunks = PngReader.Parse(png).ToArray();
+            var resplittedChunks = PngReader.ReadBytes(png).ToArray();
             Assert.AreEqual(chunks.Length, resplittedChunks.Length);
 
             for (int i = 0; i < chunks.Length; i++)
@@ -100,7 +100,7 @@ namespace Koyashiro.PngChunkUtil.Test
         public void TryWriteBytes_InputIsValid_ReturnPngArray(Chunk[] chunks)
         {
             Assert.IsTrue(PngWriter.TryWriteBytes(chunks, out var png));
-            var resplittedChunks = PngReader.Parse(png).ToArray();
+            var resplittedChunks = PngReader.ReadBytes(png).ToArray();
             Assert.AreEqual(chunks.Length, resplittedChunks.Length);
 
             for (int i = 0; i < chunks.Length; i++)

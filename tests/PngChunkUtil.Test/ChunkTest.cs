@@ -219,7 +219,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         [TestMethod]
         [DynamicData(nameof(InvalidChunkBytes))]
         [TestCategory(nameof(Chunk.Parse))]
-        public void Parse_InvalidChunkBytes_ThrowArgumentException(byte[] buffer)
+        public void ReadBytes_InvalidChunkBytes_ThrowArgumentException(byte[] buffer)
         {
             Assert.ThrowsException<ArgumentException>(() => Chunk.Parse(buffer));
         }
@@ -227,7 +227,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         [TestMethod]
         [DynamicData(nameof(ValidChunkBytes))]
         [TestCategory(nameof(Chunk.Parse))]
-        public void Parse_ValidChunkBytes_ReturnChunk(byte[] buffer)
+        public void ReadBytes_ValidChunkBytes_ReturnChunk(byte[] buffer)
         {
             var chunk = Chunk.Parse(buffer);
             Assert.AreNotEqual(default(Chunk), chunk);
@@ -236,7 +236,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         [TestMethod]
         [DynamicData(nameof(InvalidChunkBytes))]
         [TestCategory(nameof(Chunk.TryParse))]
-        public void TryParse_InvalidChunkBytes_ReturnFalseAndDefault(byte[] buffer)
+        public void TryReadBytes_InvalidChunkBytes_ReturnFalseAndDefault(byte[] buffer)
         {
             Assert.IsFalse(Chunk.TryParse(buffer, out var chunk));
             Assert.AreEqual(default(Chunk), chunk);
@@ -245,7 +245,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         [TestMethod]
         [DynamicData(nameof(ValidChunkBytes))]
         [TestCategory(nameof(Chunk.TryParse))]
-        public void TryParse_ValidChunkBytes_ReturnTrueAndChunk(byte[] buffer)
+        public void TryReadBytes_ValidChunkBytes_ReturnTrueAndChunk(byte[] buffer)
         {
             Assert.IsTrue(Chunk.TryParse(buffer, out var chunk));
             Assert.AreNotEqual(default(Chunk), chunk);

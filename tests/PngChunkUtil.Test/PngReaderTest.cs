@@ -43,31 +43,31 @@ namespace Koyashiro.PngChunkUtil.Test
 
         private static IEnumerable<object[]> ValidChunks => new object[][]
         {
-            new object[] { PngReader.Parse(_validImage).ToArray() },
-            new object[] { PngReader.Parse(_almostValidImage).ToArray() },
+            new object[] { PngReader.ReadBytes(_validImage).ToArray() },
+            new object[] { PngReader.ReadBytes(_almostValidImage).ToArray() },
         };
 
         [TestMethod]
-        [TestCategory(nameof(PngReader.Parse))]
+        [TestCategory(nameof(PngReader.ReadBytes))]
         public void Parse_InputIsNull_ThrowArgumentException()
         {
-            Assert.ThrowsException<ArgumentException>(() => PngReader.Parse(null));
+            Assert.ThrowsException<ArgumentException>(() => PngReader.ReadBytes(null));
         }
 
         [DataTestMethod]
         [DynamicData(nameof(InvalidPngs))]
-        [TestCategory(nameof(PngReader.Parse))]
+        [TestCategory(nameof(PngReader.ReadBytes))]
         public void Parse_InputIsInvalid_ThrowArgumentException(byte[] image)
         {
-            Assert.ThrowsException<ArgumentException>(() => PngReader.Parse(image));
+            Assert.ThrowsException<ArgumentException>(() => PngReader.ReadBytes(image));
         }
 
         [DataTestMethod]
         [DynamicData(nameof(ValidPngs))]
-        [TestCategory(nameof(PngReader.Parse))]
+        [TestCategory(nameof(PngReader.ReadBytes))]
         public void Parse_InputIsValid_ReturnChunks(byte[] image)
         {
-            var chunks = PngReader.Parse(image).ToArray();
+            var chunks = PngReader.ReadBytes(image).ToArray();
 
             Assert.IsTrue(chunks.Any());
             Assert.IsTrue(chunks.All(c => c.IsValid()));
@@ -77,28 +77,28 @@ namespace Koyashiro.PngChunkUtil.Test
         }
 
         [TestMethod]
-        [TestCategory(nameof(PngReader.TryParse))]
+        [TestCategory(nameof(PngReader.TryReadBytes))]
         public void TryParse_InputIsNull_ReturnFalseAndDefault()
         {
-            Assert.IsFalse(PngReader.TryParse(null, out var chunks));
+            Assert.IsFalse(PngReader.TryReadBytes(null, out var chunks));
             Assert.AreEqual(default, chunks);
         }
 
         [TestMethod]
         [DynamicData(nameof(InvalidPngs))]
-        [TestCategory(nameof(PngReader.TryParse))]
+        [TestCategory(nameof(PngReader.TryReadBytes))]
         public void TryParse_InputIsInvalid_ReturnFalseAndDefault(byte[] image)
         {
-            Assert.IsFalse(PngReader.TryParse(image, out var chunks));
+            Assert.IsFalse(PngReader.TryReadBytes(image, out var chunks));
             Assert.AreEqual(default, chunks);
         }
 
         [TestMethod]
         [DynamicData(nameof(ValidPngs))]
-        [TestCategory(nameof(PngReader.TryParse))]
+        [TestCategory(nameof(PngReader.TryReadBytes))]
         public void TryParse_InputIsValid_ReturnTrunAndChunks(byte[] image)
         {
-            Assert.IsTrue(PngReader.TryParse(image, out var chunks));
+            Assert.IsTrue(PngReader.TryReadBytes(image, out var chunks));
             Assert.IsTrue(chunks.Any());
             Assert.IsTrue(chunks.All(c => c.IsValid()));
             Assert.AreEqual("IHDR", chunks.First().ChunkType);

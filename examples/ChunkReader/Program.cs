@@ -18,7 +18,7 @@ namespace Koyashiro.ChunkReader
 
             var path = args[0];
             var bytes = File.ReadAllBytes(path);
-            var chunks = PngReader.Parse(bytes);
+            var chunks = PngReader.ReadBytes(bytes);
 
             foreach (var chunk in chunks)
             {
