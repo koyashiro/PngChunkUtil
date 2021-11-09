@@ -481,39 +481,5 @@ namespace Koyashiro.PngChunkUtil.Tests
             var chunk = Chunk.Parse(buffer);
             Assert.AreEqual(Encoding.UTF8.GetString(buffer[4..8]), chunk.ChunkType);
         }
-
-        [TestMethod]
-        [TestCategory(nameof(Chunk.ChunkData))]
-        public void ChunkData_Default_ReturnEmpty()
-        {
-            var chunk = default(Chunk);
-            Assert.AreEqual(default(string), chunk.ChunkData);
-        }
-
-        [TestMethod]
-        [DynamicData(nameof(ValidChunkBytes))]
-        [TestCategory(nameof(Chunk.ChunkData))]
-        public void ChunkData_ValidChunkBytes_ReturnChunkData(byte[] buffer)
-        {
-            var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(Encoding.UTF8.GetString(buffer[8..^4]), chunk.ChunkData);
-        }
-
-        [TestMethod]
-        [TestCategory(nameof(Chunk.ChunkData))]
-        public void Crc_Default_ReturnDefault()
-        {
-            var chunk = default(Chunk);
-            Assert.AreEqual(default(uint?), chunk.Crc);
-        }
-
-        [TestMethod]
-        [DynamicData(nameof(ValidChunkBytes))]
-        [TestCategory(nameof(Chunk.ChunkData))]
-        public void Crc_ValidChunkBytes_ReturnCrc(byte[] buffer)
-        {
-            var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(BinaryPrimitives.ReadUInt32BigEndian(buffer[^4..]), chunk.Crc);
-        }
     }
 }

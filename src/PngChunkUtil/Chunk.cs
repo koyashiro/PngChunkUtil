@@ -34,7 +34,6 @@ namespace Koyashiro.PngChunkUtil
 
         public int? Length => IsValid() ? BinaryPrimitives.ReadInt32BigEndian(_buffer.Span[LENGTH_RANGE]) : default(int?);
         public string? ChunkType => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_TYPE_RANGE]) : default(string?);
-        public string? ChunkData => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_DATA_RANGE]) : default(string?);
         public uint? Crc => IsValid() ? BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]) : default(uint?);
 
         public static Chunk Parse(ReadOnlyMemory<byte> input)
