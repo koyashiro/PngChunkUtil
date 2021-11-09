@@ -30,7 +30,7 @@ namespace Koyashiro.PngChunkUtil
         public ReadOnlySpan<byte> ChunkDataBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CHUNK_DATA_RANGE];
         public ReadOnlySpan<byte> CrcBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CRC_RANGE];
 
-        public int? ChunkDataLength => IsValid() ? BinaryPrimitives.ReadInt32BigEndian(_buffer.Span[LENGTH_RANGE]) : default(int?);
+        public int? Length => IsValid() ? BinaryPrimitives.ReadInt32BigEndian(_buffer.Span[LENGTH_RANGE]) : default(int?);
         public string? ChunkType => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_TYPE_RANGE]) : default(string?);
         public string? ChunkData => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_DATA_RANGE]) : default(string?);
         public uint? Crc => IsValid() ? BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]) : default(uint?);
@@ -42,8 +42,8 @@ namespace Koyashiro.PngChunkUtil
                 throw new ArgumentException("`input.Length` must be grater than or equal to 4", nameof(input));
             }
 
-            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(input.Span[LENGTH_RANGE]);
-            if (input.Length != chunkDataLength + 12)
+            var length = BinaryPrimitives.ReadInt32BigEndian(input.Span[LENGTH_RANGE]);
+            if (input.Length != length + 12)
             {
                 throw new ArgumentException("`Length` and `input.Length` do not match", nameof(input));
             }
@@ -59,8 +59,8 @@ namespace Koyashiro.PngChunkUtil
                 return false;
             }
 
-            var chunkDataLength = BinaryPrimitives.ReadInt32BigEndian(input.Span[LENGTH_RANGE]);
-            if (input.Length != chunkDataLength + 12)
+            var length = BinaryPrimitives.ReadInt32BigEndian(input.Span[LENGTH_RANGE]);
+            if (input.Length != length + 12)
             {
                 chunk = default;
                 return false;

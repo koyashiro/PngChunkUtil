@@ -15,7 +15,7 @@ namespace Koyashiro.ChunkReader
 
             foreach (var chunk in chunks)
             {
-                var length = string.Format("{0,5}", chunk.ChunkDataLength);
+                var length = string.Format("{0,5}", chunk.Length);
                 var chunkType = chunk.ChunkType;
                 var chunkData = string.Join(", ", chunk.ChunkDataBytes.ToArray().Select(b => $"0x{b:x2}"));
 

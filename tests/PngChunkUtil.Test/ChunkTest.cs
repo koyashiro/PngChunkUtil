@@ -449,20 +449,20 @@ namespace Koyashiro.PngChunkUtil.Tests
         }
 
         [TestMethod]
-        [TestCategory(nameof(Chunk.ChunkDataLength))]
-        public void ChunkDataLength_Default_ReturnDefault()
+        [TestCategory(nameof(Chunk.Length))]
+        public void Length_Default_ReturnDefault()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default(int?), chunk.ChunkDataLength);
+            Assert.AreEqual(default(int?), chunk.Length);
         }
 
         [TestMethod]
         [DynamicData(nameof(ValidChunkBytes))]
-        [TestCategory(nameof(Chunk.ChunkDataLength))]
-        public void ChunkDataLength_ValidChunkBytes_ReturnChunkDataLength(byte[] buffer)
+        [TestCategory(nameof(Chunk.Length))]
+        public void Length_ValidChunkBytes_ReturnLength(byte[] buffer)
         {
             var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(BinaryPrimitives.ReadInt32BigEndian(buffer[..4]), chunk.ChunkDataLength);
+            Assert.AreEqual(BinaryPrimitives.ReadInt32BigEndian(buffer[..4]), chunk.Length);
         }
 
         [TestMethod]
