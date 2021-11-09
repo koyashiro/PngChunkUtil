@@ -1,7 +1,7 @@
 # ChunkReader
 
 ```log
-$ dotnet run
+$ dotnet run example.png
 
 Length:    13,    Chunk Type: IHDR,    Chunk Data: [ 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, ... ]
 Length:     1,    Chunk Type: sRGB,    Chunk Data: [ 0x00 ]

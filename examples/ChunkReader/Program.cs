@@ -10,7 +10,14 @@ namespace Koyashiro.ChunkReader
     {
         static void Main(string[] args)
         {
-            var bytes = File.ReadAllBytes("example.png");
+            if (!args.Any())
+            {
+                Console.WriteLine("path is required");
+                Environment.Exit(1);
+            }
+
+            var path = args[0];
+            var bytes = File.ReadAllBytes(path);
             var chunks = PngReader.Parse(bytes);
 
             foreach (var chunk in chunks)
