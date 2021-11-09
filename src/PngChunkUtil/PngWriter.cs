@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-namespace KoyashiroKohaku.PngChunkUtil
+namespace Koyashiro.PngChunkUtil
 {
     public static class PngWriter
     {

@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <AssemblyName>PngChunkUtil</AssemblyName>
-    <RootNamespace>KoyashiroKohaku.PngChunkUtil</RootNamespace>
+    <RootNamespace>Koyashiro.PngChunkUtil</RootNamespace>
     <TargetFramework>net5.0</TargetFramework>
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
     <PackageId>PngChunkUtil</PackageId>
     <Version>0.3.0</Version>
-    <Authors>Koyashiro Kohaku</Authors>
+    <Authors>koyashiro</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/koyashiro/PngChunkUtil</PackageProjectUrl>
     <RepositoryUrl>https://github.com/koyashiro/PngChunkUtil</RepositoryUrl>

@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO.Hashing;
 using System.Text;
 
-namespace KoyashiroKohaku.PngChunkUtil
+namespace Koyashiro.PngChunkUtil
 {
     /// <summary>
     /// Chunk

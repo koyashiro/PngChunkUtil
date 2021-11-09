@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace KoyashiroKohaku.PngChunkUtil.Test
+namespace Koyashiro.PngChunkUtil.Test
 {
     [TestClass]
     public class PngReaderTest

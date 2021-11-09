@@ -5,7 +5,7 @@ using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace KoyashiroKohaku.PngChunkUtil.Tests
+namespace Koyashiro.PngChunkUtil.Tests
 {
     [TestClass]
     public class ChunkTest

@@ -1,6 +1,6 @@
 using System;
 
-namespace KoyashiroKohaku.PngChunkUtil
+namespace Koyashiro.PngChunkUtil
 {
     public static class AncillaryChunk
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace KoyashiroKohaku.PngChunkUtil
+namespace Koyashiro.PngChunkUtil
 {
     public static class PngReader
     {
