@@ -31,9 +31,9 @@ namespace Koyashiro.PngChunkUtil
         public ReadOnlySpan<byte> CrcBytes => _buffer.IsEmpty ? Span<byte>.Empty : _buffer.Span[CRC_RANGE];
 
         public int? ChunkDataLength => IsValid() ? BinaryPrimitives.ReadInt32BigEndian(_buffer.Span[LENGTH_RANGE]) : default(int?);
-        public string? ChunkType() => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_TYPE_RANGE]) : default(string?);
-        public string? ChunkData() => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_DATA_RANGE]) : default(string?);
-        public uint? Crc() => IsValid() ? BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]) : default(uint?);
+        public string? ChunkType => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_TYPE_RANGE]) : default(string?);
+        public string? ChunkData => IsValid() ? Encoding.UTF8.GetString(_buffer.Span[CHUNK_DATA_RANGE]) : default(string?);
+        public uint? Crc => IsValid() ? BinaryPrimitives.ReadUInt32BigEndian(_buffer.Span[CRC_RANGE]) : default(uint?);
 
         public static Chunk Parse(ReadOnlyMemory<byte> input)
         {
@@ -171,7 +171,7 @@ namespace Koyashiro.PngChunkUtil
                 return "Invalid Chunk";
             }
 
-            return $"{ChunkType()}: {ChunkData()}";
+            return $"{ChunkType}: {ChunkData}";
         }
 
         public override bool Equals(object? obj)

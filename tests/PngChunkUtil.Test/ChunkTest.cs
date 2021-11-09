@@ -470,7 +470,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         public void ChunkType_Default_ReturnEmpty()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default(string), chunk.ChunkType());
+            Assert.AreEqual(default(string), chunk.ChunkType);
         }
 
         [TestMethod]
@@ -479,7 +479,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         public void ChunkType_ValidChunkBytes_ReturnChunkType(byte[] buffer)
         {
             var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(Encoding.UTF8.GetString(buffer[4..8]), chunk.ChunkType());
+            Assert.AreEqual(Encoding.UTF8.GetString(buffer[4..8]), chunk.ChunkType);
         }
 
         [TestMethod]
@@ -487,7 +487,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         public void ChunkData_Default_ReturnEmpty()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default(string), chunk.ChunkData());
+            Assert.AreEqual(default(string), chunk.ChunkData);
         }
 
         [TestMethod]
@@ -496,7 +496,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         public void ChunkData_ValidChunkBytes_ReturnChunkData(byte[] buffer)
         {
             var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(Encoding.UTF8.GetString(buffer[8..^4]), chunk.ChunkData());
+            Assert.AreEqual(Encoding.UTF8.GetString(buffer[8..^4]), chunk.ChunkData);
         }
 
         [TestMethod]
@@ -504,7 +504,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         public void Crc_Default_ReturnDefault()
         {
             var chunk = default(Chunk);
-            Assert.AreEqual(default(uint?), chunk.Crc());
+            Assert.AreEqual(default(uint?), chunk.Crc);
         }
 
         [TestMethod]
@@ -513,7 +513,7 @@ namespace Koyashiro.PngChunkUtil.Tests
         public void Crc_ValidChunkBytes_ReturnCrc(byte[] buffer)
         {
             var chunk = Chunk.Parse(buffer);
-            Assert.AreEqual(BinaryPrimitives.ReadUInt32BigEndian(buffer[^4..]), chunk.Crc());
+            Assert.AreEqual(BinaryPrimitives.ReadUInt32BigEndian(buffer[^4..]), chunk.Crc);
         }
     }
 }

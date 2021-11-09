@@ -71,9 +71,9 @@ namespace Koyashiro.PngChunkUtil.Test
 
             Assert.IsTrue(chunks.Any());
             Assert.IsTrue(chunks.All(c => c.IsValid()));
-            Assert.AreEqual("IHDR", chunks.First().ChunkType());
-            Assert.IsTrue(chunks.Any(c => c.ChunkType() == "IDAT"));
-            Assert.AreEqual("IEND", chunks.Last().ChunkType());
+            Assert.AreEqual("IHDR", chunks.First().ChunkType);
+            Assert.IsTrue(chunks.Any(c => c.ChunkType == "IDAT"));
+            Assert.AreEqual("IEND", chunks.Last().ChunkType);
         }
 
         [TestMethod]
@@ -101,9 +101,9 @@ namespace Koyashiro.PngChunkUtil.Test
             Assert.IsTrue(PngReader.TryParse(image, out var chunks));
             Assert.IsTrue(chunks.Any());
             Assert.IsTrue(chunks.All(c => c.IsValid()));
-            Assert.AreEqual("IHDR", chunks.First().ChunkType());
-            Assert.IsTrue(chunks.Any(c => c.ChunkType() == "IDAT"));
-            Assert.AreEqual("IEND", chunks.Last().ChunkType());
+            Assert.AreEqual("IHDR", chunks.First().ChunkType);
+            Assert.IsTrue(chunks.Any(c => c.ChunkType == "IDAT"));
+            Assert.AreEqual("IEND", chunks.Last().ChunkType);
         }
 
     }
