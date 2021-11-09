@@ -22,11 +22,7 @@ namespace Koyashiro.ChunkReader
 
             foreach (var chunk in chunks)
             {
-                var length = string.Format("{0,5}", chunk.Length);
-                var chunkType = chunk.ChunkType;
-                var chunkData = string.Join(", ", chunk.ChunkDataBytes.ToArray().Select(b => $"0x{b:x2}"));
-
-                Console.WriteLine($"Length: {length},    Chunk Type: {chunkType},    Chunk Data: [ {(chunkData.Length > 48 ? $"{chunkData.Remove(48)}..." : chunkData)} ]");
+                Console.WriteLine(chunk);
             }
         }
     }

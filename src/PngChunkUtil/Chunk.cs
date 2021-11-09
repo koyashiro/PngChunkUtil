@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Binary;
+using System.Globalization;
 using System.IO.Hashing;
 using System.Text;
 
@@ -10,6 +11,7 @@ namespace Koyashiro.PngChunkUtil
     /// </summary>
     public readonly struct Chunk : IEquatable<Chunk>
     {
+        private static readonly CultureInfo CULTURE_INFO = new CultureInfo("en-US");
         private static readonly Range LENGTH_RANGE = 0..4;
         private static readonly Range CHUNK_TYPE_RANGE = 4..8;
         private static readonly Range CHUNK_DATA_RANGE = 8..^4;
@@ -171,7 +173,39 @@ namespace Koyashiro.PngChunkUtil
                 return "Invalid Chunk";
             }
 
-            return $"{ChunkType}: {ChunkData}";
+            var sb = new StringBuilder();
+
+            sb.Append("Length: ");
+            sb.AppendFormat("{0,5}", Length);
+            sb.Append(",   ");
+
+            sb.Append("ChunkType: ");
+            sb.Append(ChunkType);
+            sb.Append(",   ");
+
+            sb.Append("ChunkData: ");
+            sb.Append("[ ");
+            for (var i = 0; i < 8; i++)
+            {
+                if (ChunkDataBytes.Length == i)
+                {
+                    break;
+                }
+
+                if (i != 0)
+                {
+                    sb.Append(", ");
+                }
+                sb.AppendFormat(CULTURE_INFO, "0x{0:x2}", ChunkDataBytes[i]);
+            }
+
+            if (ChunkDataBytes.Length > 8)
+            {
+                sb.Append(", ...");
+            }
+            sb.Append(" ]");
+
+            return sb.ToString();
         }
 
         public override bool Equals(object? obj)
