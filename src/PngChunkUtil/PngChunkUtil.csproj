@@ -29,4 +29,7 @@
     <PackageReference Include="System.IO.Hashing" Version="6.0.0" />
   </ItemGroup>
 
+    <PropertyGroup>
+        <GenerateAssemblyCLSCompliantAttribute>true</GenerateAssemblyCLSCompliantAttribute>
+    </PropertyGroup>
 </Project>
